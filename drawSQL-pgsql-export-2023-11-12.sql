@@ -10,7 +10,6 @@ CREATE TABLE "quacks"(
 ALTER TABLE
     "quacks" ADD PRIMARY KEY("id");
 
-
 CREATE TABLE "users"(
     "id" SERIAL NOT NULL,
     "user_id" VARCHAR(255) NOT NULL,
