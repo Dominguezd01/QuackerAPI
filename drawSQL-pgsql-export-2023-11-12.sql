@@ -1,11 +1,12 @@
 
 CREATE TABLE "quacks"(
     "id" SERIAL NOT NULL,
-    "quack_id" VARCHAR(45) NOT NULL
+    "quack_id" VARCHAR(45) NOT NULL,
     "content" VARCHAR(255) NOT NULL,
     "creation_date" TIMESTAMP(0) WITHOUT TIME ZONE NOT NULL DEFAULT 'NOW()',
     "parent_post_id" INTEGER NULL,
-    "isQuote" BOOLEAN NOT NULL
+    "is_quote" BOOLEAN NOT NULL,
+    "is_reply" BOOLEAN NOT NULL
 );
 ALTER TABLE
     "quacks" ADD PRIMARY KEY("id");
@@ -16,10 +17,10 @@ CREATE TABLE "users"(
     "user_name" VARCHAR(255) NOT NULL,
     "display_name" VARCHAR(255) NOT NULL,
     "password" VARCHAR(255) NOT NULL,
-    "profile_picture" VARCHAR(255) NOT NULL,
+    "profile_picture" VARCHAR(255) NULL,
     "email" VARCHAR(255) NOT NULL,
-    "isActive" BOOLEAN NOT NULl,
-    "emailIsValid" BOOLEAN NOT NULL
+    "is_active" BOOLEAN NOT NULl,
+    "email_is_valid" BOOLEAN NOT NULL
 );
 ALTER TABLE
     "users" ADD PRIMARY KEY("id");

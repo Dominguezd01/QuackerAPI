@@ -1,8 +1,33 @@
-const server = Bun.serve({
-    port: 3000,
-    fetch(request) {
-      return new Response("Welcome to Bun!");
+import express from "express"
+import { UsersControllers } from "./controllers/UsersController"
+import { PrismaClient } from "@prisma/client"
+const app = express()
+const PORT = process.env.PORT || 3333
+
+app.use(express.json())
+
+app.get("/ping", (req, res) => {
+  res.send("pong")
+})
+
+app.post("/users/auth/register", UsersControllers.register)
+app.get("/users/auth/verifyRegister/:userId", UsersControllers.verifyUser)
+app.post("/users/auth/login", UsersControllers.login)
+/** 
+async function createUser() {
+  await prisma.users.create({
+    data: {
+      display_name: "Dominguez",
+      email: "migueldominguezroman01@gmail.com",
+      password: await encodePass("Manzanitas23"),
+      email_is_valid: true,
+      is_active: true,
+      user_id: uuidv4(),
+      user_name: "Dominguezd01",
     },
-  });
-  
-  console.log(`Listening on localhost:${server.port}`);
+  })
+}
+*/
+app.listen(PORT, () => {
+  console.log(`http://localhost:${PORT}`)
+})
