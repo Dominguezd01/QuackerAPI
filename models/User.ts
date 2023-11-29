@@ -5,13 +5,26 @@ import { v4 as uuidv4 } from "uuid"
 import { EmailsController } from "../controllers/EmailsController"
 const prisma = new PrismaClient()
 export class User {
-  static async createUser(reqBody: any, host: string | undefined): Promise<boolean | undefined> {
+  static async createUser(reqBody: any, host: string | undefined): Promise<boolean | undefined | null> {
     let { display_name, email, password, user_name } = reqBody
     if (!display_name || !email || !password || !user_name) {
       return undefined
     }
     try {
-      let user = await prisma.users.create({
+      let user = await prisma.users.findFirst({
+        where: {
+          OR: [{
+            user_name: {
+              equals: user_name
+            },
+            email: {
+              equals: email
+            }
+          }]
+        }
+      })
+      if (user != null) return null
+      user = await prisma.users.create({
         data: {
           display_name: display_name,
           email: email,

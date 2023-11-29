@@ -9,16 +9,18 @@ export class UsersControllers {
   static async register(req: Request, res: Response): Promise<any> {
     let { display_name, email, password, user_name } = await req.body
     if (!display_name || !email || !password || !user_name) {
-      return res.status(400).json({ msg: "Something went wrong" })
+      return res.status(400).json({ status: 400, msg: "Something went wrong" })
     }
 
     let createUser = await User.createUser(await req.body, req.headers.host)
     if (createUser) {
-      return res.status(200).json({ msg: "Welcome to Ducker, happy quacking!!" })
+      return res.status(200).json({ status: 200, msg: "Welcome to Ducker, happy quacking!!" })
     } else if (createUser == undefined) {
-      return res.status(400).json({ msg: "Check the data provided" })
+      return res.status(400).json({ status: 400, msg: "Check the data provided" })
+    } else if (createUser == null) {
+      return res.status(400).json({ msg: })
     }
-    return res.status(500).json({ msg: "Something went wrong" })
+    return res.status(500).json({ status: 500, msg: "Something went wrong" })
   }
 
   static async login(req: Request, res: Response): Promise<any> {

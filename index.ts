@@ -1,11 +1,14 @@
 import express from "express"
 import { UsersControllers } from "./controllers/UsersController"
-import { PrismaClient } from "@prisma/client"
+import cors from "cors"
 const app = express()
 const PORT = process.env.PORT || 3333
 
 app.use(express.json())
+app.use(cors({
+  origin: "http://localhost:5173"
 
+}))
 app.get("/ping", (req, res) => {
   res.send("pong")
 })
