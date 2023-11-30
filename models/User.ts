@@ -6,8 +6,8 @@ import { EmailsController } from "../controllers/EmailsController"
 const prisma = new PrismaClient()
 export class User {
   static async createUser(reqBody: any, host: string | undefined): Promise<boolean | undefined | null> {
-    let { display_name, email, password, user_name } = reqBody
-    if (!display_name || !email || !password || !user_name) {
+    let { display_name, emailUser, password, user_name_user } = reqBody
+    if (!display_name || !emailUser || !password || !user_name_user) {
       return undefined
     }
     try {
@@ -15,30 +15,32 @@ export class User {
         where: {
           OR: [{
             user_name: {
-              equals: user_name
+              equals: user_name_user
             },
             email: {
-              equals: email
+              equals: emailUser
             }
           }]
         }
       })
+      console.log(user)
       if (user != null) return null
       user = await prisma.users.create({
         data: {
           display_name: display_name,
-          email: email,
+          email: emailUser,
           password: await encodePass(password),
           email_is_valid: false,
           is_active: false,
           user_id: uuidv4(),
-          user_name: user_name,
+          user_name: user_name_user,
         },
       })
 
       EmailsController.sendEmailRegister(user, host)
       return true
     } catch (ex) {
+
       console.log(ex)
       return false
     }

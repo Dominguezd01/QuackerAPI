@@ -7,18 +7,18 @@ const SECRET_KEY: string = process.env.TOKEN_SECRET || "Secretito"
 export class UsersControllers {
 
   static async register(req: Request, res: Response): Promise<any> {
-    let { display_name, email, password, user_name } = await req.body
-    if (!display_name || !email || !password || !user_name) {
+    let { display_name, emailUser, password, user_name_user } = await req.body
+    if (!display_name || !emailUser || !password || !user_name_user) {
       return res.status(400).json({ status: 400, msg: "Something went wrong" })
     }
 
     let createUser = await User.createUser(await req.body, req.headers.host)
     if (createUser) {
       return res.status(200).json({ status: 200, msg: "Welcome to Ducker, happy quacking!!" })
+    } else if (createUser == null) {
+      return res.status(401).json({ status: 401, msg: "Email or username already in use" })
     } else if (createUser == undefined) {
       return res.status(400).json({ status: 400, msg: "Check the data provided" })
-    } else if (createUser == null) {
-      return res.status(400).json({ msg: })
     }
     return res.status(500).json({ status: 500, msg: "Something went wrong" })
   }
@@ -39,7 +39,7 @@ export class UsersControllers {
     console.log(user)
     if (user != null || user != undefined) {
       const token = jwt.sign(user.user_name, SECRET_KEY)
-      return res.json({ userId: user.user_id, token: token })
+      return res.status(200).json({ status: 200, userId: user.user_id, token: token })
 
     }
   }
