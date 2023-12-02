@@ -1,7 +1,7 @@
 import { users } from "@prisma/client"
 import nodemailer from "nodemailer"
 /**
- * Options to send the email in this case, by Gmail
+ * Options to send the email in this case, by Gmail but you can customize to use the provider you want
  */
 const transporter = nodemailer.createTransport({
     service: "gmail",

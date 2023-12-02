@@ -75,7 +75,10 @@ export class User {
             }
 
             return null
-        } catch (ex) {}
+        } catch (ex) {
+            console.log(ex)
+            return undefined
+        }
     }
     /**
      * Gets the user by the email and checks the password
@@ -98,6 +101,7 @@ export class User {
             if ((user = null)) return null
             return user
         } catch (ex) {
+            console.log(ex)
             return undefined
         }
     }
