@@ -48,32 +48,46 @@ export class UsersControllers {
      * @returns
      */
     static async login(req: Request, res: Response): Promise<any> {
-        const { identifier, password } = req.body
+        try {
+            const { identifier, password } = req.body
 
-        if (!identifier || !password) {
-            return res.status(400).json({ msg: "Something went wrong" })
-        }
+            if (
+                !identifier ||
+                !password ||
+                identifier.trim() == "" ||
+                password.trim() == ""
+            ) {
+                return res
+                    .status(400)
+                    .json({ status: 400, msg: "Check the data provided" })
+            }
 
-        let user: users | null | undefined = null
-        if (identifier.includes("@")) {
-            user = await User.getUserByUserEmail(identifier, password)
-        } else {
-            user = await User.getUserByUserName(identifier, password)
-        }
-        if (user != null || user != undefined) {
+            let user: users | null | undefined = null
+            if (identifier.includes("@")) {
+                user = await User.getUserByUserEmail(identifier, password)
+            } else {
+                user = await User.getUserByUserName(identifier, password)
+            }
+            if (user == null) {
+                return res
+                    .status(401)
+                    .json({ status: 401, msg: "Wrong identifier or password" })
+            }
+            if (user == undefined) {
+                return res
+                    .status(500)
+                    .json({ status: 500, msg: "Oops...Something broke" })
+            }
             const token = jwt.sign(user.user_name, SECRET_KEY)
             return res
                 .status(200)
                 .json({ status: 200, userId: user.user_id, token: token })
-        }
-        if (user == undefined)
+        } catch (ex) {
+            console.log(ex)
             return res
                 .status(500)
                 .json({ status: 500, msg: "Oops...Something broke" })
-
-        return res
-            .status(401)
-            .json({ status: 401, msg: "Wrong identifier or password" })
+        }
     }
     /**
      * Handles the verifying process of the users to active the account
@@ -84,14 +98,26 @@ export class UsersControllers {
     static async verifyUser(req: Request, res: Response): Promise<any> {
         let { userId } = req.params
 
-        if (!userId) return res.status(400).json({ msg: "Id is missing" })
+        if (!userId)
+            return res.status(400).json({ status: 400, msg: "Id is missing" })
 
         let user = await User.getUserByUserId(userId)
 
         if (user != null && user != undefined) {
-            User.activateUser(user)
-            return res.status(200).json({ msg: "Account activated" })
+            if (!User.activateUser(user)) {
+                return res
+                    .status(500)
+                    .json({
+                        status: 500,
+                        msg: "Something went wrong trying to activate the user",
+                    })
+            }
+            return res
+                .status(200)
+                .json({ status: 200, msg: "Account activated" })
         }
-        return res.status(400).json({ msg: "Account already active" })
+        return res
+            .status(400)
+            .json({ status: 400, msg: "Account already active" })
     }
 }

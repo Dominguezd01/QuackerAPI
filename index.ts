@@ -1,6 +1,8 @@
 import express from "express"
 import { UsersControllers } from "./controllers/UsersController"
 import cors from "cors"
+import { QuacksController } from "./controllers/QuacksController"
+import authenticateToken from "./lib/authenticateToken"
 
 //Initialization variables
 const app = express()
@@ -25,6 +27,11 @@ app.get("/ping", (req, res) => {
 app.post("/users/auth/register", UsersControllers.register)
 app.get("/users/auth/verifyRegister/:userId", UsersControllers.verifyUser)
 app.post("/users/auth/login", UsersControllers.login)
+
+/**
+ * Quacks related routes
+ */
+app.post("/quacks/main", authenticateToken, QuacksController.main)
 
 app.listen(PORT, () => {
     console.log(`http://localhost:${PORT}`)

@@ -76,6 +76,7 @@ export class User {
 
             return null
         } catch (ex) {
+            console.log("Error in login")
             console.log(ex)
             return undefined
         }
@@ -101,6 +102,7 @@ export class User {
             if ((user = null)) return null
             return user
         } catch (ex) {
+            console.log("Error in login")
             console.log(ex)
             return undefined
         }
@@ -132,7 +134,7 @@ export class User {
      * Activates the user sent by parameter
      * @param user to activate
      */
-    static async activateUser(user: users) {
+    static async activateUser(user: users): Promise<Boolean> {
         try {
             prisma.users.update({
                 where: {
@@ -143,8 +145,10 @@ export class User {
                     email_is_valid: true,
                 },
             })
+            return true
         } catch (ex) {
             console.log(ex)
+            return false
         }
     }
 }
