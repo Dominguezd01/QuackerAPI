@@ -8,6 +8,7 @@ import authenticateToken from "./lib/authenticateToken"
 const app = express()
 const PORT = process.env.PORT || 3333
 let acceptedOrigins = ["http://localhost:5173"]
+
 //setting middlewares
 app.use(express.json())
 app.use(
@@ -32,6 +33,7 @@ app.post("/users/auth/login", UsersControllers.login)
  * Quacks related routes
  */
 app.post("/quacks/main", authenticateToken, QuacksController.main)
+app.get("/quacks/quack/:quack_id", QuacksController.getQuackById)
 
 app.listen(PORT, () => {
     console.log(`http://localhost:${PORT}`)

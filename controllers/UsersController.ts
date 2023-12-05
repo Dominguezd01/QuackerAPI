@@ -3,7 +3,7 @@ import jwt from "jsonwebtoken"
 import { User } from "../models/User"
 import { users } from "@prisma/client"
 
-const SECRET_KEY: string = process.env.TOKEN_SECRET || "Secretito"
+const SECRET_KEY: string = process.env.TOKEN_SECRET || "SECRETITO"
 export class UsersControllers {
     /**
      * Function to handle registers
@@ -68,6 +68,7 @@ export class UsersControllers {
             } else {
                 user = await User.getUserByUserName(identifier, password)
             }
+            console.log(user)
             if (user == null) {
                 return res
                     .status(401)
@@ -105,12 +106,10 @@ export class UsersControllers {
 
         if (user != null && user != undefined) {
             if (!User.activateUser(user)) {
-                return res
-                    .status(500)
-                    .json({
-                        status: 500,
-                        msg: "Something went wrong trying to activate the user",
-                    })
+                return res.status(500).json({
+                    status: 500,
+                    msg: "Something went wrong trying to activate the user",
+                })
             }
             return res
                 .status(200)
