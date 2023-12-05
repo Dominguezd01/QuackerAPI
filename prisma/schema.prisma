@@ -11,7 +11,7 @@ datasource db {
 model quacks {
   id              Int               @id @default(autoincrement())
   quack_id        String            @db.VarChar(45)
-  content         String            @db.VarChar(255)
+  content         String            @db.Text()
   creation_date   DateTime          @default(dbgenerated("'2023-11-28 12:15:23.287615'::timestamp without time zone")) @db.Timestamp(0)
   parent_post_id  Int?
   is_quote        Boolean

@@ -33,7 +33,11 @@ app.post("/users/auth/login", UsersControllers.login)
  * Quacks related routes
  */
 app.post("/quacks/main", authenticateToken, QuacksController.main)
-app.get("/quacks/quack/:quack_id", QuacksController.getQuackById)
+app.get(
+    "/quacks/quack/:quack_id",
+    authenticateToken,
+    QuacksController.getQuackById
+)
 
 app.listen(PORT, () => {
     console.log(`http://localhost:${PORT}`)
