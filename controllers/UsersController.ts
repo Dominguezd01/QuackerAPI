@@ -22,6 +22,7 @@ export class UsersControllers {
         }
 
         let createUser = await User.createUser(await req.body, req.headers.host)
+
         if (createUser) {
             return res.status(200).json({
                 status: 200,

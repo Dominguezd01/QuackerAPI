@@ -66,6 +66,8 @@ export class User {
             let user = await prisma.users.findFirst({
                 where: {
                     user_name: userName,
+                    is_active: true,
+                    email_is_valid: true,
                 },
             })
 
@@ -96,6 +98,8 @@ export class User {
                 where: {
                     email: email,
                     password: await encodePass(password),
+                    is_active: true,
+                    email_is_valid: true,
                 },
             })
 

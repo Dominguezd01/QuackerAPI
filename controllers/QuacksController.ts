@@ -1,4 +1,7 @@
 import { Request, Response } from "express"
+/**
+ * This is just a place holder dw
+ */
 let quacks = [
     {
         id: 1,
@@ -62,11 +65,21 @@ let quacks = [
     },
 ]
 export class QuacksController {
-    static async main(req: Request, res: Response) {
+    /**
+     * Sends the quacks the user would like
+     * @param req Request object
+     * @param res Response object
+     */
+    static async main(req: Request, res: Response): Promise<Response> {
         return res.status(200).json({ status: 200, quacks: quacks })
     }
 
-    static async getQuackById(req: Request, res: Response) {
+    /**
+     * Return the quack by the ID is provided in the URL
+     * @param req Request object
+     * @param res Response object
+     */
+    static async getQuackById(req: Request, res: Response): Promise<Response> {
         let params = req.params
         console.log(params)
         if (!params.quack_id)
