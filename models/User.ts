@@ -140,7 +140,7 @@ export class User {
      */
     static async activateUser(user: users): Promise<Boolean> {
         try {
-            prisma.users.update({
+            await prisma.users.update({
                 where: {
                     id: user.id,
                 },

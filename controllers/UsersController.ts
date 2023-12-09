@@ -63,7 +63,7 @@ export class UsersControllers {
                     .json({ status: 400, msg: "Check the data provided" })
             }
 
-            let user: users | null | undefined = null
+            let user: users | null | undefined
             if (identifier.includes("@")) {
                 user = await User.getUserByUserEmail(identifier, password)
             } else {
