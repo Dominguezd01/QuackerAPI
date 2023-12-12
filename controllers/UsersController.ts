@@ -83,7 +83,7 @@ export class UsersControllers {
             const token = jwt.sign(user.user_name, SECRET_KEY)
             return res
                 .status(200)
-                .json({ status: 200, userId: user.user_id, token: token })
+                .json({ status: 200, userId: user.user_name, token: token })
         } catch (ex) {
             console.log(ex)
             return res

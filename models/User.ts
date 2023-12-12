@@ -32,6 +32,7 @@ export class User {
                     ],
                 },
             })
+            console.log(user)
             if (user != null) return null
             user = await prisma.users.create({
                 data: {
@@ -70,7 +71,8 @@ export class User {
                     email_is_valid: true,
                 },
             })
-
+            console.log(user)
+            encodePass(password)
             if (user == null) return null
             if (await checkPass(password, user.password)) {
                 return user
