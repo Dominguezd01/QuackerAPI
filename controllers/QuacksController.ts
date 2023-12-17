@@ -1,4 +1,5 @@
 import { Request, Response } from "express"
+import { Quack } from "../models/Quack"
 /**
  * This is just a place holder dw
  */
@@ -95,5 +96,18 @@ export class QuacksController {
             return res.status(404).json({ status: 404, msg: "Quack not found" })
 
         return res.status(200).json({ quack: quack })
+    }
+
+    static async createQuack(req: Request, res: Response): Promise<Response> {
+        let { userId, content, isReply, isQuote, parentPost } = await req.body
+
+        if (!userId || userId.trim() == "" || !content || content.trim() == "")
+            return res
+                .status(400)
+                .json({ status: 400, msg: "Check data provided" })
+
+        Quack.create(userId, content, isReply, isQuote, parentPost)
+        // AQUI TE QUEDASTE ANTES DE QUE TE DIERA PEREZA PUTO VAGO DE MIERDA
+        return res.send()
     }
 }

@@ -38,6 +38,7 @@ app.get(
     authenticateToken,
     QuacksController.getQuackById
 )
+app.post("quacks/quack/create", QuacksController.createQuack)
 
 app.listen(PORT, () => {
     console.log(`http://localhost:${PORT}`)
