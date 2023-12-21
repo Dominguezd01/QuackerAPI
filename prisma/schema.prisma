@@ -11,11 +11,12 @@ datasource db {
 model quacks {
   id              Int               @id @default(autoincrement())
   quack_id        String            @db.VarChar(45)
-  content         String            @db.Text()
+  content         String
   creation_date   DateTime          @default(dbgenerated("'2023-11-28 12:15:23.287615'::timestamp without time zone")) @db.Timestamp(0)
   parent_post_id  Int?
   is_quote        Boolean
   is_reply        Boolean
+  is_active       Boolean
   requacks        requacks[]
   user_quack_like user_quack_like[]
   user_quak       user_quak[]

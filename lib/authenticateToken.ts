@@ -4,8 +4,6 @@ import jwt from "jsonwebtoken"
 const SECRET: string = process.env.TOKEN_SECRET || "SECRETITO"
 
 const authenticateToken = (req: Request, res: Response, next: NextFunction) => {
-    console.log(req.headers)
-    console.log(SECRET)
     const token = req.header("authorization")
 
     if (!token) return res.status(401).json({ message: "Unauthorized" })

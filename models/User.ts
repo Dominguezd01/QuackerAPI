@@ -157,4 +157,23 @@ export class User {
             return false
         }
     }
+
+    static async getUserInfoByUserName(
+        userName: string
+    ): Promise<users | null> {
+        try {
+            let user = await prisma.users.findFirst({
+                where: {
+                    user_name: userName,
+                },
+            })
+
+            if (!user) return null
+
+            return user
+        } catch (ex) {
+            return null
+            console.log(ex)
+        }
+    }
 }

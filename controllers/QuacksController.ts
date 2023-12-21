@@ -1,5 +1,9 @@
 import { Request, Response } from "express"
 import { Quack } from "../models/Quack"
+import { UserQuack } from "../models/UserQuack"
+import { PrismaClient } from "@prisma/client"
+import { User } from "../models/User"
+const prisma = new PrismaClient()
 /**
  * This is just a place holder dw
  */
@@ -99,15 +103,71 @@ export class QuacksController {
     }
 
     static async createQuack(req: Request, res: Response): Promise<Response> {
-        let { userId, content, isReply, isQuote, parentPost } = await req.body
+        try {
+            let { userId, content, isReply, isQuote, parentPost } =
+                await req.body
+            console.log(await req.body)
+            console.log(isQuote)
+            if (
+                !userId ||
+                userId.trim() == "" ||
+                !content ||
+                content.trim() == "" ||
+                isReply === undefined ||
+                isQuote === undefined ||
+                parentPost === undefined
+            ) {
+                return res
+                    .status(400)
+                    .json({ status: 400, msg: "Check data provided" })
+            }
 
-        if (!userId || userId.trim() == "" || !content || content.trim() == "")
+            let quackCreate = await Quack.create(
+                userId,
+                content,
+                isReply,
+                isQuote,
+                parentPost
+            )
+
+            if (quackCreate == undefined) {
+                return res
+                    .status(400)
+                    .json({ status: 400, msg: "The content is too long" })
+            } else if (quackCreate == null) {
+                return res
+                    .status(401)
+                    .json({ status: 401, msg: "Unauthorized" })
+            }
+
+            let user = await User.getUserInfoByUserName(userId)
+
+            if (user == null) {
+                await Quack.delete(quackCreate?.id)
+                return res
+                    .status(404)
+                    .json({ status: 404, msg: "The user doesnt exists" })
+            }
+
+            if (await UserQuack.create(quackCreate.id, user.id)) {
+                return res.status(200).json({
+                    status: 200,
+                    msg: "Created",
+                    quack: quackCreate,
+                    userFrom: user.user_name,
+                })
+            }
+            await Quack.delete(quackCreate?.id)
+
             return res
-                .status(400)
-                .json({ status: 400, msg: "Check data provided" })
+                .status(500)
+                .json({ status: 500, msg: "Something went really bad" })
+        } catch (ex) {
+            console.log(ex)
 
-        Quack.create(userId, content, isReply, isQuote, parentPost)
-        // AQUI TE QUEDASTE ANTES DE QUE TE DIERA PEREZA PUTO VAGO DE MIERDA
-        return res.send()
+            return res
+                .status(500)
+                .json({ status: 500, msg: "Something went really bad" })
+        }
     }
 }
