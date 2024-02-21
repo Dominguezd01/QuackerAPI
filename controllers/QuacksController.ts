@@ -149,7 +149,7 @@ export class QuacksController {
                     .json({ status: 404, msg: "The user doesnt exists" })
             }
 
-            if (await UserQuack.create(quackCreate.id, user.id)) {
+            if (await UserQuack.create(user.id, quackCreate.id)) {
                 return res.status(200).json({
                     status: 200,
                     msg: "Created",
