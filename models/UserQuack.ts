@@ -8,7 +8,6 @@ export class UserQuack {
             console.log(quackId)
             let userQuack = await prisma.user_quak.create({
                 data: {
-                    id: 0,
                     user_id: userId,
                     post_id: quackId,
                 },
