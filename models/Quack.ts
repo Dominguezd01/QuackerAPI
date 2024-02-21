@@ -36,6 +36,7 @@ export class Quack {
             console.log(ex)
         }
     }
+
     static async delete(quackId: number | undefined | null): Promise<boolean> {
         try {
             if (quackId == undefined || quackId == null) return false
