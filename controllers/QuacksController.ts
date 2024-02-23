@@ -7,6 +7,7 @@ const prisma = new PrismaClient()
 /**
  * This is just a place holder dw
  */
+/**
 let quacks = [
     {
         id: 1,
@@ -69,6 +70,7 @@ let quacks = [
         requacksCount: 1433,
     },
 ]
+*/
 export class QuacksController {
     /**
      * Sends the quacks the user would like
@@ -76,6 +78,14 @@ export class QuacksController {
      * @param res Response object
      */
     static async main(req: Request, res: Response): Promise<Response> {
+        let userData = await req.body
+        if (!userData || !userData.userId)
+            return res
+                .status(400)
+                .json({ status: 400, msg: "Something went wrong" })
+
+        console.log(await req.body)
+        let quacks = await Quack.mainPage(userData.userId)
         return res.status(200).json({ status: 200, quacks: quacks })
     }
 
@@ -86,13 +96,14 @@ export class QuacksController {
      */
     static async getQuackById(req: Request, res: Response): Promise<Response> {
         let params = req.params
+        let quacks = await prisma.quacks.findMany()
         console.log(params)
         if (!params.quack_id)
             return res
                 .status(400)
                 .json({ status: 400, msg: "Something went wrong" })
 
-        let quack = quacks.find(
+        let quack = quacks?.find(
             (quack) => quack.id == parseInt(params.quack_id)
         )
 
@@ -104,43 +115,48 @@ export class QuacksController {
 
     static async createQuack(req: Request, res: Response): Promise<Response> {
         try {
-            let { userId, content, isReply, isQuote, parentPost } =
-                await req.body
+            const userData = await req.body
+
+            console.log(userData)
+
             console.log(await req.body)
-            console.log(isQuote)
             if (
-                !userId ||
-                userId.trim() == "" ||
-                !content ||
-                content.trim() == "" ||
-                isReply === undefined ||
-                isQuote === undefined ||
-                parentPost === undefined
+                !userData.userId ||
+                userData.userId.trim() == "" ||
+                !userData.content ||
+                userData.content.trim() == "" ||
+                userData.isReply === undefined ||
+                userData.isQuote === undefined ||
+                userData.parentPost === undefined
             ) {
                 return res
                     .status(400)
                     .json({ status: 400, msg: "Check data provided" })
             }
 
-            let quackCreate = await Quack.create(
-                userId,
-                content,
-                isReply,
-                isQuote,
-                parentPost
-            )
+            if (userData.content.lenght > 500)
+                res.status(400).json({ status: 400, msg: "Content too long" })
 
-            if (quackCreate == undefined) {
+            let quackCreate = await Quack.create(
+                userData.userId,
+                userData.content,
+                userData.isReply,
+                userData.isQuote,
+                userData.parentPost
+            )
+            console.log(quackCreate)
+
+            if (quackCreate == undefined)
                 return res
-                    .status(400)
-                    .json({ status: 400, msg: "The content is too long" })
-            } else if (quackCreate == null) {
+                    .status(500)
+                    .json({ status: 500, msg: "Something went really wrong" })
+            if (quackCreate == null) {
                 return res
-                    .status(401)
-                    .json({ status: 401, msg: "Unauthorized" })
+                    .status(500)
+                    .json({ status: 500, msg: "Something went really wrong" })
             }
 
-            let user = await User.getUserInfoByUserName(userId)
+            let user = await User.getUserInfoByUserName(userData.userId)
 
             if (user == null) {
                 await Quack.delete(quackCreate?.id)

@@ -3,6 +3,8 @@ import { UsersControllers } from "./controllers/UsersController"
 import cors from "cors"
 import { QuacksController } from "./controllers/QuacksController"
 import authenticateToken from "./lib/authenticateToken"
+import { UserFollows } from "./models/UserFollows"
+import { UserFollowsController } from "./controllers/UserFollowsController"
 
 //Initialization variables
 const app = express()
@@ -28,7 +30,14 @@ app.get("/ping", (req, res) => {
 app.post("/users/auth/register", UsersControllers.register)
 app.get("/users/auth/verifyRegister/:userId", UsersControllers.verifyUser)
 app.post("/users/auth/login", UsersControllers.login)
-
+/**
+ * Users follows realated routes
+ */
+app.post(
+    "/usersFollows/follow",
+    authenticateToken,
+    UserFollowsController.follow
+)
 /**
  * Quacks related routes
  */

@@ -69,7 +69,7 @@ export class UsersControllers {
             } else {
                 user = await User.getUserByUserName(identifier, password)
             }
-            console.log(user)
+
             if (user == null) {
                 return res
                     .status(401)
@@ -83,7 +83,7 @@ export class UsersControllers {
             const token = jwt.sign(user.user_name, SECRET_KEY)
             return res
                 .status(200)
-                .json({ status: 200, userId: user.user_name, token: token })
+                .json({ status: 200, userId: user.user_id, token: token })
         } catch (ex) {
             console.log(ex)
             return res
@@ -103,7 +103,7 @@ export class UsersControllers {
         if (!userId)
             return res.status(400).json({ status: 400, msg: "Id is missing" })
 
-        let user = await User.getUserByUserId(userId)
+        let user = await User.getUserByUserId(userId, false, false)
 
         if (user != null && user != undefined) {
             if (!User.activateUser(user)) {

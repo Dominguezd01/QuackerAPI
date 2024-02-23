@@ -119,14 +119,16 @@ export class User {
      * @param userId
      */
     static async getUserByUserId(
-        userId: string
+        userId: string,
+        is_active: boolean = true,
+        email_is_valid: boolean = true
     ): Promise<users | null | undefined> {
         try {
             let user = await prisma.users.findFirst({
                 where: {
                     user_id: userId,
-                    is_active: false,
-                    email_is_valid: false,
+                    is_active: is_active,
+                    email_is_valid: email_is_valid,
                 },
             })
             if (user == null) return null
@@ -134,6 +136,7 @@ export class User {
             return user
         } catch (e) {
             console.log(e)
+            return undefined
         }
     }
     /**
