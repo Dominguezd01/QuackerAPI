@@ -3,22 +3,7 @@ import { v4 as uuidv4 } from "uuid"
 import { User } from "./User"
 
 const prisma = new PrismaClient()
-interface QuackWithCounts {
-    id: number
-    content: string
-    creation_date: Date
-    parent_post_id: number | null
-    is_quote: boolean
-    is_reply: boolean
-    is_active: boolean
-    user: {
-        user_id: string
-        display_name: string
-        user_name: string
-    }
-    user_quack_like_count?: number
-    requacks_count?: number
-}
+
 export class Quack {
     static async create(
         userId: string,
@@ -28,21 +13,33 @@ export class Quack {
         parentPost: number | null
     ): Promise<null | quacks | undefined> {
         try {
-            let user = User.getUserByUserId(userId)
+            let user = await User.getUserByUserId(userId)
 
             console.log("USER")
             console.log(user)
             if (!user) return null
-            return await prisma.quacks.create({
+            let quack = await prisma.quacks.create({
                 data: {
                     content: content,
                     is_quote: isQuote,
                     is_reply: isReply,
                     quack_id: uuidv4(),
+                    creation_date: new Date(),
                     is_active: true,
                     parent_post_id: parentPost,
                 },
             })
+
+            let userQuack = await prisma.user_quack.create({
+                data: {
+                    user_id: user.id,
+                    post_id: quack.id,
+                },
+            })
+
+            if (userQuack) return quack
+
+            return undefined
         } catch (ex) {
             console.log(ex)
             return undefined
@@ -74,23 +71,28 @@ export class Quack {
                     user_id: userId,
                 },
             })
-            console.log(userId)
             if (user == null) return false
-            const tenDaysAgo = new Date()
-            tenDaysAgo.setDate(tenDaysAgo.getDate() - 10)
+
+            let daysInterval = new Date(
+                new Date().setDate(new Date().getDate() - 30)
+            )
+
             const quacks = await prisma.quacks.findMany({
                 where: {
-                    user_quak: {
+                    user_quack: {
                         some: {
                             users: {
-                                user_follows_user_follows_user_id_followingTousers:
+                                user_follows_user_follows_user_id_followedTousers:
                                     {
                                         some: {
-                                            user_id_followed: user?.id, // User ID of the user you are following
+                                            user_id: user?.id,
                                         },
                                     },
                             },
                         },
+                    },
+                    creation_date: {
+                        gte: daysInterval,
                     },
                 },
                 select: {
@@ -102,10 +104,11 @@ export class Quack {
                     is_quote: true,
                     is_reply: true,
                     is_active: true,
-                    user_quak: {
+                    user_quack: {
                         select: {
                             users: {
                                 select: {
+                                    id: true,
                                     user_name: true,
                                     display_name: true,
                                     user_id: true,
@@ -113,37 +116,17 @@ export class Quack {
                             },
                         },
                     },
-                    requacks: {
+                    _count: {
                         select: {
-                            id: true,
-                        },
-                    },
-                    user_quack_like: {
-                        select: {
-                            id: true,
+                            requacks: true,
+                            comments_comments_quack_id_commentedToquacks: true,
+                            user_quack_like: true,
                         },
                     },
                 },
             })
 
-            let quacksSend: any = []
-            for (let quack of quacks) {
-                let quackSend = {
-                    id: quack.quack_id,
-                    authorDisplayName: quack.user_quak[0].users.display_name,
-                    authorUserName: quack.user_quak[0].users.user_name,
-                    authorUserId: quack.user_quak[0].users.user_id,
-                    likeCount: quack.user_quack_like.length,
-                    requackCount: quack.requacks.length,
-                    content: quack.content,
-                    commentCount: await prisma.quacks.count({
-                        where: { parent_post_id: quack.id },
-                    }),
-                }
-                quacksSend.push(quackSend)
-            }
-
-            return quacksSend
+            return quacks
         } catch (error) {
             console.error("Error retrieving quacks:", error)
             throw error

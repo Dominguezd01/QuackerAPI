@@ -9,17 +9,19 @@ datasource db {
 }
 
 model quacks {
-  id              Int               @id @default(autoincrement())
-  quack_id        String            @db.VarChar(45)
-  content         String
-  creation_date   DateTime          @default(dbgenerated("'2023-11-28 12:15:23.287615'::timestamp without time zone")) @db.Timestamp(0)
-  parent_post_id  Int?
-  is_quote        Boolean
-  is_reply        Boolean
-  is_active       Boolean
-  requacks        requacks[]
-  user_quack_like user_quack_like[]
-  user_quak       user_quak[]
+  id                                           Int               @id @default(autoincrement())
+  quack_id                                     String            @db.VarChar(45)
+  content                                      String
+  creation_date                                DateTime          @default(dbgenerated("'2023-11-28 12:15:23.287615'::timestamp without time zone")) @db.Timestamp(0)
+  parent_post_id                               Int?
+  is_quote                                     Boolean
+  is_reply                                     Boolean
+  is_active                                    Boolean
+  comments_comments_quack_idToquacks           comments[]        @relation("comments_quack_idToquacks")
+  comments_comments_quack_id_commentedToquacks comments[]        @relation("comments_quack_id_commentedToquacks")
+  requacks                                     requacks[]
+  user_quack                                   user_quack[]
+  user_quack_like                              user_quack_like[]
 }
 
 model requacks {
@@ -31,11 +33,13 @@ model requacks {
 }
 
 model user_follows {
-  id                                          Int   @id @default(autoincrement())
-  user_id_following                           Int
-  user_id_followed                            Int
-  users_user_follows_user_id_followedTousers  users @relation("user_follows_user_id_followedTousers", fields: [user_id_followed], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "user_follows_user_id_followed_foreign")
-  users_user_follows_user_id_followingTousers users @relation("user_follows_user_id_followingTousers", fields: [user_id_following], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "user_follows_user_id_following_foreign")
+  id                                         Int   @id @default(autoincrement())
+  user_id                                    Int
+  user_id_followed                           Int
+  users_user_follows_user_id_followedTousers users @relation("user_follows_user_id_followedTousers", fields: [user_id_followed], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "user_follows_user_id_followed_foreign")
+  users_user_follows_user_idTousers          users @relation("user_follows_user_idTousers", fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "user_follows_user_id_following_foreign")
+
+  @@unique([user_id, user_id_followed], map: "unique_user_follow")
 }
 
 model user_quack_like {
@@ -46,27 +50,35 @@ model user_quack_like {
   users   users  @relation(fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "user_quack_like_user_id_foreign")
 }
 
-model user_quak {
-  id      Int    @id @default(autoincrement())
+model users {
+  id                                                Int               @id @default(autoincrement())
+  user_id                                           String            @unique(map: "users_user_id_unique") @db.VarChar(255)
+  user_name                                         String            @unique(map: "users_user_name_unique") @db.VarChar(255)
+  display_name                                      String            @db.VarChar(255)
+  password                                          String            @db.VarChar(255)
+  profile_picture                                   String?           @db.VarChar(255)
+  email                                             String            @unique(map: "users_email_unique") @db.VarChar(255)
+  is_active                                         Boolean
+  email_is_valid                                    Boolean
+  requacks                                          requacks[]
+  user_follows_user_follows_user_id_followedTousers user_follows[]    @relation("user_follows_user_id_followedTousers")
+  user_follows_user_follows_user_idTousers          user_follows[]    @relation("user_follows_user_idTousers")
+  user_quack                                        user_quack[]
+  user_quack_like                                   user_quack_like[]
+}
+
+model comments {
+  id                                         Int    @id @default(autoincrement())
+  quack_id                                   Int
+  quack_id_commented                         Int
+  quacks_comments_quack_idToquacks           quacks @relation("comments_quack_idToquacks", fields: [quack_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_quack_id")
+  quacks_comments_quack_id_commentedToquacks quacks @relation("comments_quack_id_commentedToquacks", fields: [quack_id_commented], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_quack_id_commented")
+}
+
+model user_quack {
+  id      Int    @id(map: "user_quak_pkey") @default(autoincrement())
   post_id Int
   user_id Int
   quacks  quacks @relation(fields: [post_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "user_quak_post_id_foreign")
   users   users  @relation(fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "user_quak_user_id_foreign")
-}
-
-model users {
-  id                                                 Int               @id @default(autoincrement())
-  user_id                                            String            @unique(map: "users_user_id_unique") @db.VarChar(255)
-  user_name                                          String            @unique(map: "users_user_name_unique") @db.VarChar(255)
-  display_name                                       String            @db.VarChar(255)
-  password                                           String            @db.VarChar(255)
-  profile_picture                                    String?           @db.VarChar(255)
-  email                                              String            @unique(map: "users_email_unique") @db.VarChar(255)
-  is_active                                          Boolean
-  email_is_valid                                     Boolean
-  requacks                                           requacks[]
-  user_follows_user_follows_user_id_followedTousers  user_follows[]    @relation("user_follows_user_id_followedTousers")
-  user_follows_user_follows_user_id_followingTousers user_follows[]    @relation("user_follows_user_id_followingTousers")
-  user_quack_like                                    user_quack_like[]
-  user_quak                                          user_quak[]
 }

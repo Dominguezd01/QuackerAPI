@@ -6,7 +6,7 @@ export class UserQuack {
         try {
             console.log(userId)
             console.log(quackId)
-            let userQuack = await prisma.user_quak.create({
+            let userQuack = await prisma.user_quack.create({
                 data: {
                     user_id: userId,
                     post_id: quackId,

@@ -117,9 +117,6 @@ export class QuacksController {
         try {
             const userData = await req.body
 
-            console.log(userData)
-
-            console.log(await req.body)
             if (
                 !userData.userId ||
                 userData.userId.trim() == "" ||
@@ -137,6 +134,16 @@ export class QuacksController {
             if (userData.content.lenght > 500)
                 res.status(400).json({ status: 400, msg: "Content too long" })
 
+            let user = await User.getUserByUserId(userData.userId)
+
+            if (user == null)
+                return res.status(401).json({ status: 401, msg: "Unathorized" })
+
+            if (user == undefined)
+                return res
+                    .status(500)
+                    .json({ status: 500, msg: "Something went wrong" })
+
             let quackCreate = await Quack.create(
                 userData.userId,
                 userData.content,
@@ -144,19 +151,17 @@ export class QuacksController {
                 userData.isQuote,
                 userData.parentPost
             )
-            console.log(quackCreate)
 
             if (quackCreate == undefined)
                 return res
                     .status(500)
                     .json({ status: 500, msg: "Something went really wrong" })
+
             if (quackCreate == null) {
                 return res
                     .status(500)
                     .json({ status: 500, msg: "Something went really wrong" })
             }
-
-            let user = await User.getUserInfoByUserName(userData.userId)
 
             if (user == null) {
                 await Quack.delete(quackCreate?.id)
@@ -164,16 +169,6 @@ export class QuacksController {
                     .status(404)
                     .json({ status: 404, msg: "The user doesnt exists" })
             }
-
-            if (await UserQuack.create(user.id, quackCreate.id)) {
-                return res.status(200).json({
-                    status: 200,
-                    msg: "Created",
-                    quack: quackCreate,
-                    userFrom: user.user_name,
-                })
-            }
-            await Quack.delete(quackCreate?.id)
 
             return res
                 .status(500)

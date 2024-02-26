@@ -39,12 +39,12 @@ CREATE TABLE "user_quack_like" (
 );
 
 -- CreateTable
-CREATE TABLE "user_quak" (
+CREATE TABLE "user_quack" (
     "id" SERIAL NOT NULL,
     "post_id" INTEGER NOT NULL,
     "user_id" INTEGER NOT NULL,
 
-    CONSTRAINT "user_quak_pkey" PRIMARY KEY ("id")
+    CONSTRAINT "user_quack_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
