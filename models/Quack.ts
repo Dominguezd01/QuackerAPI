@@ -129,7 +129,7 @@ export class Quack {
             return quacks
         } catch (error) {
             console.error("Error retrieving quacks:", error)
-            throw error
+            return null
         }
     }
 }

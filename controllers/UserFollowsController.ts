@@ -8,7 +8,7 @@ export class UserFollowsController {
         if (!userData || !userData.userId || !userData.userFollowedId) {
             return res
                 .status(400)
-                .json({ status: 400, msg: "Something went wrong" })
+                .json({ status: 400, msg: "Check the data provided" })
         }
 
         if (userData.userId == userData.userFollowedId)

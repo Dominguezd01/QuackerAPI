@@ -81,9 +81,13 @@ export class UsersControllers {
                     .json({ status: 500, msg: "Oops...Something broke" })
             }
             const token = jwt.sign(user.user_name, SECRET_KEY)
-            return res
-                .status(200)
-                .json({ status: 200, userId: user.user_id, token: token })
+            return res.status(200).json({
+                status: 200,
+                userName: user.user_name,
+                userDisplayName: user.display_name,
+                userId: user.user_id,
+                token: token,
+            })
         } catch (ex) {
             console.log(ex)
             return res
@@ -119,5 +123,27 @@ export class UsersControllers {
         return res
             .status(400)
             .json({ status: 400, msg: "Account already active" })
+    }
+
+    static async getUserProfile(req: Request, res: Response) {
+        let userData = req.params
+
+        if (!userData || !userData.userId || !userData.userProfileCheck) {
+            return res.status(400).json({
+                status: 400,
+                msg: "The data provided is not valid",
+            })
+        }
+        let userInfo = await User.getUserProfile(
+            userData.userId,
+            userData.userProfileCheck
+        )
+
+        if (userInfo == null)
+            return res
+                .status(500)
+                .json({ status: 500, msg: "Something went wrong" })
+
+        return res.status(200).json({ status: 200, userInfo: userInfo })
     }
 }

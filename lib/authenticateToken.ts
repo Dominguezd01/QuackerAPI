@@ -6,7 +6,8 @@ const SECRET: string = process.env.TOKEN_SECRET || "SECRETITO"
 const authenticateToken = (req: Request, res: Response, next: NextFunction) => {
     const token = req.header("authorization")
 
-    if (!token) return res.status(401).json({ message: "Unauthorized" })
+    if (!token)
+        return res.status(401).json({ status: 401, message: "Unauthorized" })
 
     jwt.verify(token, SECRET, (err: any, token: any) => {
         console.log(err)

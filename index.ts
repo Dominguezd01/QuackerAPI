@@ -30,6 +30,11 @@ app.get("/ping", (req, res) => {
 app.post("/users/auth/register", UsersControllers.register)
 app.get("/users/auth/verifyRegister/:userId", UsersControllers.verifyUser)
 app.post("/users/auth/login", UsersControllers.login)
+app.get(
+    "/users/profile/:userId/:userProfileCheck",
+    authenticateToken,
+    UsersControllers.getUserProfile
+)
 /**
  * Users follows realated routes
  */

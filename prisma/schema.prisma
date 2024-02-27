@@ -60,6 +60,7 @@ model users {
   email                                             String            @unique(map: "users_email_unique") @db.VarChar(255)
   is_active                                         Boolean
   email_is_valid                                    Boolean
+  bio                                               String?
   requacks                                          requacks[]
   user_follows_user_follows_user_id_followedTousers user_follows[]    @relation("user_follows_user_id_followedTousers")
   user_follows_user_follows_user_idTousers          user_follows[]    @relation("user_follows_user_idTousers")

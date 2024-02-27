@@ -3,7 +3,10 @@ import { checkPass, encodePass } from "../lib/passwordFunctions"
 
 import { v4 as uuidv4 } from "uuid"
 import { EmailsController } from "../controllers/EmailsController"
-const prisma = new PrismaClient()
+import { assign } from "nodemailer/lib/shared"
+const prisma = new PrismaClient({
+    log: ["query"],
+})
 export class User {
     /**
      * Creates a user with the data provided
@@ -175,8 +178,82 @@ export class User {
 
             return user
         } catch (ex) {
-            return null
             console.log(ex)
+            return null
+        }
+    }
+
+    static async getUserProfile(userId: string, userProfileCheck: string) {
+        try {
+            let user = await prisma.users.findFirst({
+                where: {
+                    user_id: userId,
+                },
+                select: {
+                    id: true,
+                },
+            })
+
+            let userCheck: any = await prisma.users.findFirst({
+                where: {
+                    user_id: userProfileCheck,
+                    is_active: true,
+                },
+                select: {
+                    id: true,
+                    user_id: true,
+                    user_name: true,
+                    display_name: true,
+                    profile_picture: true,
+                    bio: true,
+                    user_quack: {
+                        select: {
+                            quacks: {
+                                select: {
+                                    quack_id: true,
+                                    content: true,
+
+                                    _count: {
+                                        select: {
+                                            requacks: true,
+                                            user_quack_like: true,
+                                            comments_comments_quack_id_commentedToquacks:
+                                                true,
+                                        },
+                                    },
+                                },
+                            },
+                        },
+                    },
+                    _count: {
+                        select: {
+                            //user followed count of users
+                            user_follows_user_follows_user_idTousers: true,
+                            //number of followers the user has
+                            user_follows_user_follows_user_id_followedTousers:
+                                true,
+                        },
+                    },
+                },
+            })
+
+            let followed = await prisma.user_follows.findFirst({
+                where: {
+                    user_id: user?.id,
+                    user_id_followed: userCheck?.id,
+                },
+            })
+
+            delete userCheck.id
+
+            console.log(user)
+            return {
+                user: userCheck,
+                followed: followed == null ? false : true,
+            }
+        } catch (ex) {
+            console.log(ex)
+            return null
         }
     }
 }
