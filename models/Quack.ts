@@ -132,4 +132,19 @@ export class Quack {
             return null
         }
     }
+
+    static async getQuackByQuackId(quackId: string) {
+        try {
+            let quack = await prisma.quacks.findFirst({
+                where: {
+                    quack_id: quackId,
+                },
+            })
+
+            return quack
+        } catch (ex) {
+            console.log(ex)
+            return false
+        }
+    }
 }

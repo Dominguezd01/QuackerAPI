@@ -5,6 +5,7 @@ import { QuacksController } from "./controllers/QuacksController"
 import authenticateToken from "./lib/authenticateToken"
 import { UserFollows } from "./models/UserFollows"
 import { UserFollowsController } from "./controllers/UserFollowsController"
+import { UserQuackLikeController } from "./controllers/UserQuackLikeController"
 
 //Initialization variables
 const app = express()
@@ -57,7 +58,16 @@ app.post(
     authenticateToken,
     QuacksController.createQuack
 )
-
+app.post(
+    "/quacks/quack/like",
+    authenticateToken,
+    UserQuackLikeController.likeQuack
+)
+app.post(
+    "/quacks/quack/dislike",
+    authenticateToken,
+    UserQuackLikeController.disLikeQuack
+)
 app.listen(PORT, () => {
     console.log(`http://localhost:${PORT}`)
 })
