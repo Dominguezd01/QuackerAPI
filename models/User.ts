@@ -163,7 +163,11 @@ export class User {
             return false
         }
     }
-
+    /**
+     * Gets the user by the name of the user
+     * @param userName name of the user
+     * @returns complete user object
+     */
     static async getUserInfoByUserName(
         userName: string
     ): Promise<users | null> {
@@ -182,7 +186,12 @@ export class User {
             return null
         }
     }
-
+    /**
+     * This function is used to get the info to load the profiles
+     * @param userId user who is looking for the info
+     * @param userProfileCheck the user id to load
+     * @returns the user info
+     */
     static async getUserProfile(userId: string, userProfileCheck: string) {
         try {
             let user = await prisma.users.findFirst({

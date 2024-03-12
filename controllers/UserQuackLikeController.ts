@@ -5,7 +5,6 @@ import { User } from "../models/User"
 import { UserQuackLike } from "../models/UserQuackLike"
 export class UserQuackLikeController {
     static async likeQuack(req: Request, res: Response): Promise<Response> {
-        console.log(await req.body)
         let userData = await req.body
         if (!userData || !userData.quackId || !userData.userId) {
             return res
@@ -15,13 +14,11 @@ export class UserQuackLikeController {
         let quack = await Quack.getQuackByQuackId(userData.quackId)
         let user = await User.getUserByUserId(userData.userId)
 
-        console.log(`USER`)
-        console.log(quack)
         if (quack == null) {
             return res.status(404).json({ status: 404, msg: "Quack not found" })
         }
 
-        if (quack == false) {
+        if (quack == undefined) {
             return res.status(500).json({
                 status: 500,
                 msg: "Something went wrong, try again later",
@@ -56,7 +53,6 @@ export class UserQuackLikeController {
     }
 
     static async disLikeQuack(req: Request, res: Response): Promise<Response> {
-        console.log(await req.body)
         let userData = await req.body
         if (!userData || !userData.quackId || !userData.userId) {
             return res
@@ -69,7 +65,7 @@ export class UserQuackLikeController {
             return res.status(404).json({ status: 404, msg: "Quack not found" })
         }
 
-        if (quack == false) {
+        if (quack == undefined) {
             return res.status(500).json({
                 status: 500,
                 msg: "Something went wrong, try again later",

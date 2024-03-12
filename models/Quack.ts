@@ -116,6 +116,14 @@ export class Quack {
                             },
                         },
                     },
+                    user_quack_like: {
+                        select: {
+                            post_id: true,
+                        },
+                        where: {
+                            user_id: user.id,
+                        },
+                    },
                     _count: {
                         select: {
                             requacks: true,
@@ -144,7 +152,7 @@ export class Quack {
             return quack
         } catch (ex) {
             console.log(ex)
-            return false
+            return undefined
         }
     }
 }

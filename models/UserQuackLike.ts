@@ -9,6 +9,12 @@ const prisma = new PrismaClient({
     log: ["query", "info", "error"],
 })
 export class UserQuackLike {
+    /**
+     * Create the relation between the user id and the quack id
+     * @param userId user that likes the post
+     * @param quackId the post
+     * @returns true or undefined if something is wrong
+     */
     static async likeQuack(
         userId: number,
         quackId: number
@@ -30,18 +36,18 @@ export class UserQuackLike {
                     user_id: userId,
                 },
             })
-            console.log("QUACK LIKE")
-            console.log(quackLike)
             return true
         } catch (ex) {
             console.log(ex)
             return undefined
         }
     }
-
-    static async disLikeQuack(
-        quackId: number
-    ): Promise<user_quack_like | undefined> {
+    /**
+     * Destroy the row with the id provided
+     * @param quackId the row id to delete
+     * @returns true | undefined
+     */
+    static async disLikeQuack(quackId: number): Promise<boolean | undefined> {
         try {
             let quackLike = await prisma.user_quack_like.delete({
                 where: {
@@ -49,13 +55,19 @@ export class UserQuackLike {
                 },
             })
 
-            return quackLike
+            return true
         } catch (ex) {
             console.log(ex)
             return undefined
         }
     }
 
+    /**
+     * Finds the quack liked and delete it
+     * @param userId user id
+     * @param quackId quack id
+     * @returns true | undefined
+     */
     static async findByUserIdAndQuackId(
         userId: number,
         quackId: number
