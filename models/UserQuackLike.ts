@@ -24,7 +24,7 @@ export class UserQuackLike {
                 userId,
                 quackId
             )
-            if (quackLikedAlready == undefined) return undefined
+            if (quackLikedAlready === undefined) return undefined
 
             if (quackLikedAlready != null) {
                 return false
@@ -79,7 +79,6 @@ export class UserQuackLike {
                     user_id: userId,
                 },
             })
-
             return quackLike
         } catch (ex) {
             console.log(ex)

@@ -6,6 +6,7 @@ import { UserQuackLike } from "../models/UserQuackLike"
 export class UserQuackLikeController {
     static async likeQuack(req: Request, res: Response): Promise<Response> {
         let userData = await req.body
+        console.log(userData)
         if (!userData || !userData.quackId || !userData.userId) {
             return res
                 .status(400)
@@ -38,18 +39,20 @@ export class UserQuackLikeController {
 
         let quackLike = await UserQuackLike.likeQuack(user.id, quack.id)
 
-        if (quackLike === undefined)
+        if (quackLike === undefined) {
+            console.log("Linea 43")
             return res.status(500).json({
                 status: 500,
                 msg: "Something went wrong try again later",
             })
+        }
 
         if (quackLike === false) {
             return res
                 .status(400)
                 .json({ status: 400, msg: "Post already liked" })
         }
-        return res.status(200).json({ staus: 200, msg: "Quack liked" })
+        return res.status(200).json({ status: 200, msg: "Quack liked" })
     }
 
     static async disLikeQuack(req: Request, res: Response): Promise<Response> {
@@ -105,6 +108,6 @@ export class UserQuackLikeController {
                 msg: "Something went wrong try again later",
             })
 
-        return res.status(200).json({ staus: 200, msg: "Quack liked" })
+        return res.status(200).json({ status: 200, msg: "Quack disliked" })
     }
 }
