@@ -37,6 +37,7 @@ app.get(
     authenticateToken,
     UsersControllers.getUserProfile
 )
+
 /**
  * Users follows realated routes
  */
@@ -49,7 +50,7 @@ app.post(
  * Quacks related routes
  */
 app.post("/quacks/main", authenticateToken, QuacksController.main)
-app.get(
+app.post(
     "/quacks/quack/:quack_id",
     authenticateToken,
     QuacksController.getQuackById

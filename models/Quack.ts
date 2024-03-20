@@ -146,6 +146,71 @@ export class Quack {
         }
     }
 
+    static async getQuackInfo(quackId: string, userId: string) {
+        try {
+            let quack = await prisma.quacks.findFirst({
+                where: {
+                    quack_id: quackId,
+                },
+
+                select: {
+                    id: true,
+                    quack_id: true,
+                    content: true,
+                    creation_date: true,
+                    parent_post_id: true,
+                    is_quote: true,
+                    is_reply: true,
+                    is_active: true,
+                    user_quack: {
+                        select: {
+                            users: {
+                                select: {
+                                    id: true,
+                                    user_name: true,
+                                    display_name: true,
+                                    user_id: true,
+                                },
+                            },
+                        },
+                    },
+                    user_quack_like: {
+                        select: {
+                            post_id: true,
+                        },
+                        where: {
+                            users: {
+                                user_id: userId,
+                            },
+                        },
+                    },
+                    requacks: {
+                        select: {
+                            post_id: true,
+                        },
+                        where: {
+                            users: {
+                                user_id: userId,
+                            },
+                        },
+                    },
+                    _count: {
+                        select: {
+                            requacks: true,
+                            comments_comments_quack_id_commentedToquacks: true,
+                            user_quack_like: true,
+                        },
+                    },
+                },
+            })
+
+            return quack
+        } catch (ex) {
+            console.log(ex)
+            return undefined
+        }
+    }
+
     static async getQuackByQuackId(quackId: string) {
         try {
             let quack = await prisma.quacks.findFirst({

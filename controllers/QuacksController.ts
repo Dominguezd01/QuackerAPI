@@ -35,21 +35,28 @@ export class QuacksController {
      */
     static async getQuackById(req: Request, res: Response): Promise<Response> {
         let params = req.params
-        let quacks = await prisma.quacks.findMany()
+        let body = await req.body
         console.log(params)
-        if (!params.quack_id)
+        console.log(body)
+        if (!params || !params.quack_id || !body || !body.userId)
             return res
                 .status(400)
-                .json({ status: 400, msg: "Something went wrong" })
+                .json({ status: 400, msg: "Check data provided" })
 
-        let quack = quacks?.find(
-            (quack) => quack.id == parseInt(params.quack_id)
-        )
+        let quack = await Quack.getQuackInfo(params.quack_id, body.userId)
 
-        if (!quack)
+        if (quack === null) {
             return res.status(404).json({ status: 404, msg: "Quack not found" })
+        }
 
-        return res.status(200).json({ quack: quack })
+        if (quack === undefined) {
+            return res.status(500).json({
+                status: 500,
+                msg: "Something went wrong, try again later",
+            })
+        }
+
+        return res.status(200).json({ status: 200, quack: quack })
     }
 
     static async createQuack(req: Request, res: Response): Promise<Response> {
