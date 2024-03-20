@@ -27,8 +27,14 @@ export class RequackController {
                 status: 500,
                 msg: "Something went wrong, try again later",
             })
-        if (quack == null)
+        if (quack == null) {
             return res.status(404).json({ status: 404, msg: "Quack not found" })
+        }
+
+        let requack = await Requack.create(user?.id, quack.id)
+
+        if (requack === undefined)
+            return res.status(500).json({ status: 500, msg: "Error" })
 
         return res.status(200).json({ status: 200, msg: "Requacked" })
     }
@@ -46,13 +52,13 @@ export class RequackController {
             return res.status(404).json({ status: 404, msg: "User not found" })
         }
 
-        if (user == undefined)
+        if (user === undefined)
             return res.status(500).json({
                 status: 500,
                 msg: "Something went wrong, try again later",
             })
 
-        if (quack == undefined)
+        if (quack === undefined)
             return res.status(500).json({
                 status: 500,
                 msg: "Something went wrong, try again later",
@@ -65,7 +71,7 @@ export class RequackController {
         if (requack != null) {
             let deleteRequack = Requack.delete(requack.id)
 
-            if (deleteRequack == undefined)
+            if (deleteRequack === undefined)
                 return res.status(500).json({
                     status: 500,
                     msg: "Something went wrong, try again later",

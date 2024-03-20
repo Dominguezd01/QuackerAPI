@@ -74,8 +74,9 @@ app.post("/quacks/quack/requack", authenticateToken, RequackController.requack)
 app.delete(
     "/quacks/quack/deleteRequack",
     authenticateToken,
-    RequackController.requack
+    RequackController.deleteRequack
 )
+
 app.listen(PORT, () => {
     console.log(`http://localhost:${PORT}`)
 })

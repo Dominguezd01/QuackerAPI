@@ -124,6 +124,11 @@ export class Quack {
                             user_id: user.id,
                         },
                     },
+                    requacks: {
+                        where: {
+                            user_id: user.id,
+                        },
+                    },
                     _count: {
                         select: {
                             requacks: true,
