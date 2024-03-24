@@ -3,24 +3,23 @@ generator client {
 }
 
 datasource db {
-  provider  = "postgresql"
-  url       = env("DATABASE_URL")
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
 }
 
 model quacks {
-  id                                           Int               @id @default(autoincrement())
-  quack_id                                     String            @db.VarChar(45)
-  content                                      String
-  creation_date                                DateTime          @default(dbgenerated("'2023-11-28 12:15:23.287615'::timestamp without time zone")) @db.Timestamp(0)
-  parent_post_id                               Int?
-  is_quote                                     Boolean
-  is_reply                                     Boolean
-  is_active                                    Boolean
-  comments_comments_quack_idToquacks           comments[]        @relation("comments_quack_idToquacks")
-  comments_comments_quack_id_commentedToquacks comments[]        @relation("comments_quack_id_commentedToquacks")
-  requacks                                     requacks[]
-  user_quack                                   user_quack[]
-  user_quack_like                              user_quack_like[]
+  id              Int               @id @default(autoincrement())
+  quack_id        String            @db.VarChar(45)
+  content         String
+  creation_date   DateTime          @default(dbgenerated("'2023-11-28 12:15:23.287615'::timestamp without time zone")) @db.Timestamp(0)
+  parent_post_id  Int?
+  is_quote        Boolean
+  is_reply        Boolean
+  is_active       Boolean
+  quack_comments  quack_comments[]
+  requacks        requacks[]
+  user_quack      user_quack[]
+  user_quack_like user_quack_like[]
 }
 
 model requacks {
@@ -47,6 +46,8 @@ model user_quack_like {
   user_id Int
   quacks  quacks @relation(fields: [post_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "user_quack_like_post_id_foreign")
   users   users  @relation(fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "user_quack_like_user_id_foreign")
+
+  @@unique([user_id, post_id], map: "user_quack_like_uq")
 }
 
 model users {
@@ -68,11 +69,12 @@ model users {
 }
 
 model comments {
-  id                                         Int    @id @default(autoincrement())
-  quack_id                                   Int
-  quack_id_commented                         Int
-  quacks_comments_quack_idToquacks           quacks @relation("comments_quack_idToquacks", fields: [quack_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_quack_id")
-  quacks_comments_quack_id_commentedToquacks quacks @relation("comments_quack_id_commentedToquacks", fields: [quack_id_commented], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_quack_id_commented")
+  id             Int              @id @default(autoincrement())
+  comment_id     String?          @db.VarChar(60)
+  content        String?
+  is_active      Boolean?
+  creation_date  DateTime?        @default(now()) @db.Timestamp(6)
+  quack_comments quack_comments[]
 }
 
 model user_quack {
@@ -81,4 +83,12 @@ model user_quack {
   user_id Int
   quacks  quacks @relation(fields: [post_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "user_quak_post_id_foreign")
   users   users  @relation(fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "user_quak_user_id_foreign")
+}
+
+model quack_comments {
+  id         Int       @id @default(autoincrement())
+  quack_id   Int?
+  comment_id Int?
+  comments   comments? @relation(fields: [comment_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  quacks     quacks?   @relation(fields: [quack_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
 }

@@ -14,9 +14,6 @@ export class Quack {
     ): Promise<null | quacks | undefined> {
         try {
             let user = await User.getUserByUserId(userId)
-
-            console.log("USER")
-            console.log(user)
             if (!user) return null
             let quack = await prisma.quacks.create({
                 data: {
@@ -124,6 +121,7 @@ export class Quack {
                             user_id: user.id,
                         },
                     },
+
                     requacks: {
                         where: {
                             user_id: user.id,
@@ -132,7 +130,7 @@ export class Quack {
                     _count: {
                         select: {
                             requacks: true,
-                            comments_comments_quack_id_commentedToquacks: true,
+                            quack_comments: true,
                             user_quack_like: true,
                         },
                     },
@@ -194,10 +192,12 @@ export class Quack {
                             },
                         },
                     },
+
                     _count: {
                         select: {
                             requacks: true,
-                            comments_comments_quack_id_commentedToquacks: true,
+                            //comments_comments_quack_id_commentedToquacks: true,
+                            quack_comments: true,
                             user_quack_like: true,
                         },
                     },
