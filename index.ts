@@ -51,7 +51,7 @@ app.post(
  */
 app.post("/quacks/main", authenticateToken, QuacksController.main)
 app.post(
-    "/quacks/quack/:quack_id",
+    "/quacks/quack/info/:quack_id",
     authenticateToken,
     QuacksController.getQuackById
 )

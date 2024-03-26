@@ -11,7 +11,7 @@ model quacks {
   id              Int               @id @default(autoincrement())
   quack_id        String            @db.VarChar(45)
   content         String
-  creation_date   DateTime          @default(dbgenerated("'2023-11-28 12:15:23.287615'::timestamp without time zone")) @db.Timestamp(0)
+  creation_date   DateTime          @default(now()) @db.Timestamp(6)
   parent_post_id  Int?
   is_quote        Boolean
   is_reply        Boolean
@@ -89,6 +89,6 @@ model quack_comments {
   id         Int       @id @default(autoincrement())
   quack_id   Int?
   comment_id Int?
-  comments   comments? @relation(fields: [comment_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  quacks     quacks?   @relation(fields: [quack_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  comments   comments? @relation(fields: [comment_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "quack_comments_comments_fk")
+  quacks     quacks?   @relation(fields: [quack_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "quack_comments_quacks_fk")
 }

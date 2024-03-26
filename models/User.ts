@@ -226,8 +226,7 @@ export class User {
                                         select: {
                                             requacks: true,
                                             user_quack_like: true,
-                                            comments_comments_quack_id_commentedToquacks:
-                                                true,
+                                            quack_comments: true,
                                         },
                                     },
                                 },
