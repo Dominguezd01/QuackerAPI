@@ -10,6 +10,7 @@ import { RequackController } from "./controllers/RequacksController"
 import { getCommentRange } from "typescript"
 import { CommentsController } from "./controllers/CommentsController"
 import { PrismaClient } from "@prisma/client"
+import { SearchController } from "./controllers/SearchController"
 
 //Initialization variables
 const app = express()
@@ -88,6 +89,7 @@ app.post(
     CommentsController.create
 )
 
+app.post("/search", authenticateToken, SearchController.search)
 app.listen(PORT, () => {
     console.log(`http://localhost:${PORT}`)
 })

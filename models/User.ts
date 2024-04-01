@@ -76,7 +76,7 @@ export class User {
         try {
             let user = await prisma.users.findFirst({
                 where: {
-                    user_name: userName,
+                    user_name: "@" + userName,
                     is_active: true,
                     email_is_valid: true,
                 },
