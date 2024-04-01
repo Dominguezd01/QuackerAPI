@@ -7,7 +7,7 @@
     "bun-types": "latest"
   },
   "scripts": {
-    "dev": "bun --watch index.ts"
+    "dev": "bun --hot index.ts"
   },
   "peerDependencies": {
     "typescript": "^5.3.2"

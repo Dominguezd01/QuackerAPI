@@ -18,7 +18,13 @@ export class User {
         reqBody: any,
         host: string | undefined
     ): Promise<boolean | undefined | null> {
-        let { display_name, emailUser, password, user_name_user } = reqBody
+        let {
+            display_name,
+            emailUser,
+            password,
+            user_name_user,
+            profilePicture,
+        } = reqBody
 
         try {
             let user = await prisma.users.findFirst({
@@ -46,6 +52,7 @@ export class User {
                     is_active: false,
                     user_id: uuidv4(),
                     user_name: user_name_user,
+                    profile_picture: profilePicture,
                 },
             })
 
@@ -132,6 +139,30 @@ export class User {
                     user_id: userId,
                     is_active: is_active,
                     email_is_valid: email_is_valid,
+                },
+            })
+            if (user == null) return null
+
+            return user
+        } catch (e) {
+            console.log(e)
+            return undefined
+        }
+    }
+
+    /**
+     * Look for a user with the "user_id" field provided
+     * @param userId
+     */
+    static async getUserDisabledByUserName(
+        userName: string
+    ): Promise<users | null | undefined> {
+        try {
+            let user = await prisma.users.findFirst({
+                where: {
+                    user_name: userName,
+                    is_active: false,
+                    email_is_valid: false,
                 },
             })
             if (user == null) return null

@@ -7,10 +7,14 @@ import { UserFollows } from "./models/UserFollows"
 import { UserFollowsController } from "./controllers/UserFollowsController"
 import { UserQuackLikeController } from "./controllers/UserQuackLikeController"
 import { RequackController } from "./controllers/RequacksController"
+import { getCommentRange } from "typescript"
+import { CommentsController } from "./controllers/CommentsController"
+import { PrismaClient } from "@prisma/client"
 
 //Initialization variables
 const app = express()
 const PORT = process.env.PORT || 3333
+const prisma = new PrismaClient()
 let acceptedOrigins = ["http://localhost:5173"]
 
 //setting middlewares
@@ -30,7 +34,7 @@ app.get("/ping", (req, res) => {
  * Users related routes
  */
 app.post("/users/auth/register", UsersControllers.register)
-app.get("/users/auth/verifyRegister/:userId", UsersControllers.verifyUser)
+app.get("/users/auth/verifyRegister/:userName", UsersControllers.verifyUser)
 app.post("/users/auth/login", UsersControllers.login)
 app.get(
     "/users/profile/:userId/:userProfileCheck",
@@ -76,6 +80,12 @@ app.delete(
     "/quacks/quack/deleteRequack",
     authenticateToken,
     RequackController.deleteRequack
+)
+
+app.post(
+    "/comments/comment/create",
+    authenticateToken,
+    CommentsController.create
 )
 
 app.listen(PORT, () => {

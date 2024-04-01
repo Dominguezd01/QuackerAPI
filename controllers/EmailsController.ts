@@ -30,7 +30,7 @@ export class EmailsController {
             html: `
                 Welcome to Ducker, before you can do anything, we need to verify this email exists.<br>
                 Click on the link bellow to verify your account.<br>
-                <a href="${process.env.PROTO}://${host}/users/auth/verifyRegister/${user.user_id}">VERIFY!!!</a>
+                <a href="${process.env.PROTO}://${host}/users/auth/verifyRegister/${user.user_name}">VERIFY!!!</a>
             `,
         }
 
