@@ -3,22 +3,18 @@ import { UsersControllers } from "./controllers/UsersController"
 import cors from "cors"
 import { QuacksController } from "./controllers/QuacksController"
 import authenticateToken from "./lib/authenticateToken"
-import { UserFollows } from "./models/UserFollows"
 import { UserFollowsController } from "./controllers/UserFollowsController"
 import { UserQuackLikeController } from "./controllers/UserQuackLikeController"
 import { RequackController } from "./controllers/RequacksController"
-import { getCommentRange } from "typescript"
 import { CommentsController } from "./controllers/CommentsController"
-import { PrismaClient } from "@prisma/client"
 import { SearchController } from "./controllers/SearchController"
 
 //Initialization variables
 const app = express()
 const PORT = process.env.PORT || 3333
-const prisma = new PrismaClient()
 let acceptedOrigins = ["http://localhost:5173"]
 
-//setting middlewares
+//Setting middlewares
 app.use(express.json())
 app.use(
     cors({
@@ -26,7 +22,7 @@ app.use(
     })
 )
 
-//routes to test the state
+//Routes to test the state
 app.get("/ping", (req, res) => {
     res.send("pong")
 })
@@ -89,7 +85,12 @@ app.post(
     CommentsController.create
 )
 
+/**
+ * Search related routes
+ */
 app.post("/search", authenticateToken, SearchController.search)
+
+
 app.listen(PORT, () => {
     console.log(`http://localhost:${PORT}`)
 })
