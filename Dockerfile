@@ -8,5 +8,4 @@ COPY . .
 
 ENV NODE_ENV production
 
-CMD [ "bun", "build" ]
 CMD [ "bun", "start" ]
