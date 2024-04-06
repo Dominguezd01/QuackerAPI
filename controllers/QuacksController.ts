@@ -13,12 +13,6 @@ export class QuacksController {
      */
     static async main(req: Request, res: Response): Promise<Response> {
         let userData = await req.body
-        console.log(userData)
-        if (!userData || !userData.userId)
-            return res
-                .status(400)
-                .json({ status: 400, msg: "Something went wrong" })
-
         let quacks = await Quack.mainPage(userData.token.id)
 
         if (quacks == null)
