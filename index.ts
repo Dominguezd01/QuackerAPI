@@ -15,7 +15,11 @@ import { PrismaClient } from "@prisma/client"
 const app = express()
 const prisma = new PrismaClient()
 const PORT = process.env.PORT || 3333
-let acceptedOrigins = ["https://quackersocial.netlify.app"]
+let acceptedOrigins = [
+    "http://localhost:5173",
+    "http://localhost:4173",
+    "https://quackersocial.netlify.app",
+]
 
 //Setting middlewares
 app.use(express.json())

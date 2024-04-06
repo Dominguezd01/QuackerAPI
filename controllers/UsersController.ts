@@ -28,7 +28,7 @@ export class UsersControllers {
             !emailUser ||
             !password ||
             !user_name_user ||
-            user_name_user.contains("@") ||
+            user_name_user.includes("@") ||
             !profilePicture
         ) {
             return res
