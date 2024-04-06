@@ -31,7 +31,7 @@ export class QuacksController {
     static async getQuackById(req: Request, res: Response): Promise<Response> {
         let params = req.params
         let body = await req.body
-        if (!params || !params.quack_id || !body || !body.userId)
+        if (!params || !params.quack_id || !body)
             return res
                 .status(400)
                 .json({ status: 400, msg: "Check data provided" })
