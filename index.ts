@@ -93,6 +93,18 @@ app.post(
     authenticateToken,
     CommentsController.create
 )
+
+app.delete(
+    "/comments/comment/delete",
+    authenticateToken,
+    CommentsController.delete
+)
+
+app.get(
+    "/comments/comment/getComments/:quackId",
+    authenticateToken,
+    CommentsController.getCommentsFromQuack
+)
 /**
  * Search related routes
  */

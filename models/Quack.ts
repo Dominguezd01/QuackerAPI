@@ -131,7 +131,13 @@ export class Quack {
                     _count: {
                         select: {
                             requacks: true,
-                            quack_comments: true,
+                            quack_comments: {
+                                where: {
+                                    comments: {
+                                        is_active: true,
+                                    },
+                                },
+                            },
                             user_quack_like: true,
                         },
                     },
@@ -199,7 +205,13 @@ export class Quack {
                         select: {
                             requacks: true,
                             //comments_comments_quack_id_commentedToquacks: true,
-                            quack_comments: true,
+                            quack_comments: {
+                                where: {
+                                    comments: {
+                                        is_active: true,
+                                    },
+                                },
+                            },
                             user_quack_like: true,
                         },
                     },

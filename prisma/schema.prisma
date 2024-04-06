@@ -64,6 +64,7 @@ model users {
   comment_like                                      comment_like[]
   comment_requack                                   comment_requack[]
   requacks                                          requacks[]
+  user_comments                                     user_comments[]
   user_follows_user_follows_user_id_followedTousers user_follows[]    @relation("user_follows_user_id_followedTousers")
   user_follows_user_follows_user_idTousers          user_follows[]    @relation("user_follows_user_idTousers")
   user_quack                                        user_quack[]
@@ -81,6 +82,7 @@ model comments {
   comments_comment_comments_comment_comment_commented_idTocomments comments_comment[] @relation("comments_comment_comment_commented_idTocomments")
   comments_comment_comments_comment_comment_idTocomments           comments_comment[] @relation("comments_comment_comment_idTocomments")
   quack_comments                                                   quack_comments[]
+  user_comments                                                    user_comments[]
 }
 
 model user_quack {
@@ -125,4 +127,12 @@ model comments_comment {
   comment_commented_id                                     Int?
   comments_comments_comment_comment_commented_idTocomments comments? @relation("comments_comment_comment_commented_idTocomments", fields: [comment_commented_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
   comments_comments_comment_comment_idTocomments           comments? @relation("comments_comment_comment_idTocomments", fields: [comment_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model user_comments {
+  id         Int       @id @default(autoincrement())
+  comment_id Int?
+  user_id    Int?
+  comments   comments? @relation(fields: [comment_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  users      users?    @relation(fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
 }

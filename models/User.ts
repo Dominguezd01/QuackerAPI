@@ -314,6 +314,7 @@ export class User {
                     email: true,
                     bio: true,
                     password: false,
+                    is_active: true,
                 },
                 where: {
                     id: id,
