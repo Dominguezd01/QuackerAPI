@@ -10,10 +10,10 @@
     "dev": "bun --hot index.ts"
   },
   "peerDependencies": {
-    "typescript": "^5.3.2"
+    "typescript": "^5.4.4"
   },
   "dependencies": {
-    "@prisma/client": "latest",
+    "@prisma/client": "5.12.1",
     "@types/bcrypt": "5.0.2",
     "@types/cors": "2.8.17",
     "@types/jsonwebtoken": "9.0.5",
@@ -23,8 +23,8 @@
     "cors": "2.8.5",
     "express": "4.19.2",
     "jsonwebtoken": "9.0.2",
-    "nodemailer": "6.9.9",
-    "prisma": "latest",
+    "nodemailer": "6.9.13",
+    "prisma": "5.12.1",
     "uuid": "9.0.1"
   }
 }

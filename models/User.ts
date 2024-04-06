@@ -76,19 +76,18 @@ export class User {
         try {
             let user = await prisma.users.findFirst({
                 where: {
-                    user_name: "@" + userName,
+                    user_name: userName,
                     is_active: true,
                     email_is_valid: true,
                 },
             })
-            console.log(user)
-            encodePass(password)
-            if (user == null) return null
-            if (await checkPass(password, user.password)) {
-                return user
-            }
+            if (
+                user === null ||
+                (await checkPass(password, user?.password)) === false
+            )
+                return null
 
-            return null
+            return user
         } catch (ex) {
             console.log("Error in login")
             console.log(ex)
@@ -101,21 +100,22 @@ export class User {
      * @param password
      * @returns null if there is no user, undefined if something crash and the user itself if found
      */
-    static async getUserByUserEmail(
-        email: string,
-        password: string
-    ): Promise<users | null | undefined> {
+    static async getUserByUserEmail(email: string, password: string) {
         try {
             let user = await prisma.users.findFirst({
                 where: {
-                    email: email,
-                    password: await encodePass(password),
+                    user_name: email,
                     is_active: true,
                     email_is_valid: true,
                 },
             })
 
-            if ((user = null)) return null
+            if (
+                user === null ||
+                (await checkPass(password, user?.password)) === false
+            )
+                return null
+
             return user
         } catch (ex) {
             console.log("Error in login")
@@ -132,9 +132,13 @@ export class User {
         userId: string,
         is_active: boolean = true,
         email_is_valid: boolean = true
-    ): Promise<users | null | undefined> {
+    ) {
         try {
             let user = await prisma.users.findFirst({
+                select: {
+                    id: true,
+                    user_name: true,
+                },
                 where: {
                     user_id: userId,
                     is_active: is_active,
@@ -201,7 +205,7 @@ export class User {
      */
     static async getUserInfoByUserName(
         userName: string
-    ): Promise<users | null> {
+    ): Promise<users | null | undefined> {
         try {
             let user = await prisma.users.findFirst({
                 where: {
@@ -209,12 +213,10 @@ export class User {
                 },
             })
 
-            if (!user) return null
-
             return user
         } catch (ex) {
             console.log(ex)
-            return null
+            return undefined
         }
     }
     /**
@@ -223,11 +225,11 @@ export class User {
      * @param userProfileCheck the user id to load
      * @returns the user info
      */
-    static async getUserProfile(userId: string, userProfileCheck: string) {
+    static async getUserProfile(userId: number, userProfileCheck: string) {
         try {
             let user = await prisma.users.findFirst({
                 where: {
-                    user_id: userId,
+                    id: userId,
                 },
                 select: {
                     id: true,
@@ -236,12 +238,13 @@ export class User {
 
             let userCheck: any = await prisma.users.findFirst({
                 where: {
-                    user_id: userProfileCheck,
+                    user_name: userProfileCheck,
                     is_active: true,
                 },
                 select: {
                     id: true,
-                    user_id: true,
+                    password: false,
+                    user_id: false,
                     user_name: true,
                     display_name: true,
                     profile_picture: true,
@@ -293,6 +296,32 @@ export class User {
         } catch (ex) {
             console.log(ex)
             return null
+        }
+    }
+    /**
+     * Gets the user by parameter
+     * @param id user id
+     * @returns user
+     */
+    static async getUserById(id: number) {
+        try {
+            return await prisma.users.findUnique({
+                select: {
+                    id: true,
+                    user_id: true,
+                    display_name: true,
+                    user_name: true,
+                    email: true,
+                    bio: true,
+                    password: false,
+                },
+                where: {
+                    id: id,
+                },
+            })
+        } catch (ex) {
+            console.log(ex)
+            return undefined
         }
     }
 }

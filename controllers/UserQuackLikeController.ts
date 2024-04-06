@@ -6,27 +6,26 @@ import { UserQuackLike } from "../models/UserQuackLike"
 export class UserQuackLikeController {
     static async likeQuack(req: Request, res: Response): Promise<Response> {
         let userData = await req.body
-        console.log(userData)
         if (!userData || !userData.quackId || !userData.userId) {
             return res
                 .status(400)
                 .json({ status: 400, msg: "Check data provided" })
         }
         let quack = await Quack.getQuackByQuackId(userData.quackId)
-        let user = await User.getUserByUserId(userData.userId)
+        let user = await User.getUserById(userData.token.id)
 
-        if (quack == null) {
+        if (quack === null) {
             return res.status(404).json({ status: 404, msg: "Quack not found" })
         }
 
-        if (quack == undefined) {
+        if (quack === undefined) {
             return res.status(500).json({
                 status: 500,
                 msg: "Something went wrong, try again later",
             })
         }
 
-        if (user == null) {
+        if (user === null) {
             return res.status(404).json({ status: 404, msg: "User not found" })
         }
 
@@ -40,7 +39,6 @@ export class UserQuackLikeController {
         let quackLike = await UserQuackLike.likeQuack(user.id, quack.id)
 
         if (quackLike === undefined) {
-            console.log("Linea 43")
             return res.status(500).json({
                 status: 500,
                 msg: "Something went wrong try again later",
@@ -63,18 +61,18 @@ export class UserQuackLikeController {
                 .json({ status: 400, msg: "Check data provided" })
         }
         let quack = await Quack.getQuackByQuackId(userData.quackId)
-        let user = await User.getUserByUserId(userData.userId)
-        if (quack == null) {
+        let user = await User.getUserById(userData.token.id)
+        if (quack === null) {
             return res.status(404).json({ status: 404, msg: "Quack not found" })
         }
 
-        if (quack == undefined) {
+        if (quack === undefined) {
             return res.status(500).json({
                 status: 500,
                 msg: "Something went wrong, try again later",
             })
         }
-        if (user == null) {
+        if (user === null) {
             return res.status(404).json({ status: 404, msg: "User not found" })
         }
 
@@ -90,7 +88,7 @@ export class UserQuackLikeController {
             quack.id
         )
 
-        if (quackDislike == null) {
+        if (quackDislike === null) {
             return res.status(200).json({ status: 200, msg: "Disliked" })
         }
 

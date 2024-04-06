@@ -13,12 +13,13 @@ export class QuacksController {
      */
     static async main(req: Request, res: Response): Promise<Response> {
         let userData = await req.body
+        console.log(userData)
         if (!userData || !userData.userId)
             return res
                 .status(400)
                 .json({ status: 400, msg: "Something went wrong" })
 
-        let quacks = await Quack.mainPage(userData.userId)
+        let quacks = await Quack.mainPage(userData.token.id)
 
         if (quacks == null)
             return res
@@ -43,7 +44,7 @@ export class QuacksController {
                 .status(400)
                 .json({ status: 400, msg: "Check data provided" })
 
-        let quack = await Quack.getQuackInfo(params.quack_id, body.userId)
+        let quack = await Quack.getQuackInfo(params.quack_id, body.token.id)
 
         if (quack === null) {
             return res.status(404).json({ status: 404, msg: "Quack not found" })
@@ -80,12 +81,12 @@ export class QuacksController {
             if (userData.content.lenght > 500)
                 res.status(400).json({ status: 400, msg: "Content too long" })
 
-            let user = await User.getUserByUserId(userData.userId)
+            let user = await User.getUserById(userData.token.id)
 
-            if (user == null)
+            if (user === null)
                 return res.status(401).json({ status: 401, msg: "Unathorized" })
 
-            if (user == undefined)
+            if (user === undefined)
                 return res
                     .status(500)
                     .json({ status: 500, msg: "Something went wrong" })
@@ -98,12 +99,12 @@ export class QuacksController {
                 userData.parentPost
             )
 
-            if (quackCreate == undefined)
+            if (quackCreate === undefined)
                 return res
                     .status(500)
                     .json({ status: 500, msg: "Something went really wrong" })
 
-            if (quackCreate == null) {
+            if (quackCreate === null) {
                 return res
                     .status(500)
                     .json({ status: 500, msg: "Something went really wrong" })

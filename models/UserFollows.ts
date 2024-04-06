@@ -11,7 +11,7 @@ export class UserFollows {
     static async follow(
         userId: number,
         userFollowed: number
-    ): Promise<Boolean | null> {
+    ): Promise<Boolean | user_follows | undefined> {
         try {
             let relation = await prisma.user_follows.create({
                 data: {
@@ -20,12 +20,27 @@ export class UserFollows {
                 },
             })
 
-            if (relation) return true
-
-            return false
+            return relation
         } catch (ex) {
             console.log(ex)
-            return null
+            return undefined
+        }
+    }
+
+    static async unFollow(
+        followedId: number
+    ): Promise<Boolean | user_follows | undefined> {
+        try {
+            let relation = await prisma.user_follows.delete({
+                where: {
+                    id: followedId,
+                },
+            })
+
+            return relation
+        } catch (ex) {
+            console.log(ex)
+            return undefined
         }
     }
     /**
@@ -37,7 +52,7 @@ export class UserFollows {
     static async checkIfFollow(
         userId: number,
         userIdFollowed: number
-    ): Promise<Boolean | null> {
+    ): Promise<user_follows | null | undefined> {
         try {
             let exists = await prisma.user_follows.findFirst({
                 where: {
@@ -46,12 +61,10 @@ export class UserFollows {
                 },
             })
 
-            if (exists) return true
-
-            return false
+            return exists
         } catch (ex) {
             console.log(ex)
-            return null
+            return undefined
         }
     }
 }

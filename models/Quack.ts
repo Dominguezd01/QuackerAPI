@@ -34,9 +34,7 @@ export class Quack {
                 },
             })
 
-            if (userQuack) return quack
-
-            return undefined
+            return quack
         } catch (ex) {
             console.log(ex)
             return undefined
@@ -61,19 +59,18 @@ export class Quack {
         }
     }
 
-    static async mainPage(userId: string) {
+    static async mainPage(userId: number) {
         try {
             const user = await prisma.users.findFirst({
                 where: {
-                    user_id: userId,
+                    id: userId,
                 },
             })
-            if (user == null) return false
+            if (user === null) return false
 
             let daysInterval = new Date(
                 new Date().setDate(new Date().getDate() - 30)
             )
-
             const quacks = await prisma.quacks.findMany({
                 where: {
                     user_quack: {
@@ -81,15 +78,15 @@ export class Quack {
                             users: {
                                 user_follows_user_follows_user_id_followedTousers:
                                     {
-                                        some: {
-                                            user_id: user?.id,
+                                        none: {
+                                            user_id: user.id,
+                                            AND: [
+                                                { NOT: [{ user_id: user.id }] },
+                                            ],
                                         },
                                     },
                             },
                         },
-                    },
-                    creation_date: {
-                        gte: daysInterval,
                     },
                 },
                 select: {
@@ -124,6 +121,9 @@ export class Quack {
                     },
 
                     requacks: {
+                        select: {
+                            post_id: true,
+                        },
                         where: {
                             user_id: user.id,
                         },
@@ -137,7 +137,7 @@ export class Quack {
                     },
                 },
             })
-
+            console.log(quacks.length)
             return quacks
         } catch (error) {
             console.error("Error retrieving quacks:", error)
@@ -145,7 +145,7 @@ export class Quack {
         }
     }
 
-    static async getQuackInfo(quackId: string, userId: string) {
+    static async getQuackInfo(quackId: string, userId: number) {
         try {
             let quack = await prisma.quacks.findFirst({
                 where: {
@@ -180,7 +180,7 @@ export class Quack {
                         },
                         where: {
                             users: {
-                                user_id: userId,
+                                id: userId,
                             },
                         },
                     },
@@ -190,7 +190,7 @@ export class Quack {
                         },
                         where: {
                             users: {
-                                user_id: userId,
+                                id: userId,
                             },
                         },
                     },

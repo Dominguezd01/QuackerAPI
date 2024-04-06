@@ -8,9 +8,12 @@ import { UserQuackLikeController } from "./controllers/UserQuackLikeController"
 import { RequackController } from "./controllers/RequacksController"
 import { CommentsController } from "./controllers/CommentsController"
 import { SearchController } from "./controllers/SearchController"
+import { Quack } from "./models/Quack"
+import { PrismaClient } from "@prisma/client"
 
 //Initialization variables
 const app = express()
+const prisma = new PrismaClient()
 const PORT = process.env.PORT || 3333
 let acceptedOrigins = ["http://localhost:5173"]
 
@@ -34,7 +37,7 @@ app.post("/users/auth/register", UsersControllers.register)
 app.get("/users/auth/verifyRegister/:userName", UsersControllers.verifyUser)
 app.post("/users/auth/login", UsersControllers.login)
 app.get(
-    "/users/profile/:userId/:userProfileCheck",
+    "/users/profile/:userName",
     authenticateToken,
     UsersControllers.getUserProfile
 )
@@ -46,6 +49,12 @@ app.post(
     "/usersFollows/follow",
     authenticateToken,
     UserFollowsController.follow
+)
+
+app.delete(
+    "/usersFollows/unfollow",
+    authenticateToken,
+    UserFollowsController.unFollow
 )
 /**
  * Quacks related routes
@@ -84,12 +93,10 @@ app.post(
     authenticateToken,
     CommentsController.create
 )
-
 /**
  * Search related routes
  */
 app.post("/search", authenticateToken, SearchController.search)
-
 
 app.listen(PORT, () => {
     console.log(`http://localhost:${PORT}`)

@@ -3,7 +3,6 @@ export async function encodePass(pass: string): Promise<string> {
         algorithm: "bcrypt",
         cost: 4,
     })
-    console.log(hash)
     return hash
 }
 

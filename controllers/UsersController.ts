@@ -3,6 +3,7 @@ import jwt from "jsonwebtoken"
 import { User } from "../models/User"
 import { users } from "@prisma/client"
 import { getViewsDir } from "../lib/getViewsDir"
+import { generateToken } from "../lib/generateToken"
 
 const SECRET_KEY: string = process.env.TOKEN_SECRET || "SECRETITO"
 
@@ -27,11 +28,12 @@ export class UsersControllers {
             !emailUser ||
             !password ||
             !user_name_user ||
+            user_name_user.contains("@") ||
             !profilePicture
         ) {
             return res
                 .status(400)
-                .json({ status: 400, msg: "Something went wrong" })
+                .json({ status: 400, msg: "Check data provided" })
         }
 
         let createUser = await User.createUser(await req.body, req.headers.host)
@@ -76,30 +78,31 @@ export class UsersControllers {
                     .json({ status: 400, msg: "Check the data provided" })
             }
 
-            let user: users | null | undefined
+            let user
             if (identifier.includes("@")) {
                 user = await User.getUserByUserEmail(identifier, password)
             } else {
                 user = await User.getUserByUserName(identifier, password)
             }
 
-            if (user == null) {
+            if (user === null) {
                 return res
                     .status(401)
                     .json({ status: 401, msg: "Wrong identifier or password" })
             }
-            if (user == undefined) {
+
+            if (user === undefined) {
                 return res
                     .status(500)
                     .json({ status: 500, msg: "Oops...Something broke" })
             }
-            const token = jwt.sign(user.user_name, SECRET_KEY)
+
+            const token = generateToken(user)
             return res.status(200).json({
                 status: 200,
+                profileImage: user.profile_picture,
                 userName: user.user_name,
                 userDisplayName: user.display_name,
-                userId: user.user_id,
-                profileImage: user.profile_picture,
                 token: token,
             })
         } catch (ex) {
@@ -119,9 +122,11 @@ export class UsersControllers {
         let { userName } = req.params
 
         let user = await User.getUserDisabledByUserName(userName)
+
         if (user === undefined) {
             return res.sendFile(getViewsDir() + "500Error.html")
         }
+
         if (user != null && user != undefined) {
             if (!User.activateUser(user)) {
                 return res.status(500).json({
@@ -139,15 +144,16 @@ export class UsersControllers {
     static async getUserProfile(req: Request, res: Response) {
         let userData = req.params
 
-        if (!userData || !userData.userId || !userData.userProfileCheck) {
+        if (!userData || !userData.userName) {
             return res.status(400).json({
                 status: 400,
                 msg: "The data provided is not valid",
             })
         }
+
         let userInfo = await User.getUserProfile(
-            userData.userId,
-            userData.userProfileCheck
+            await req.body.token.id,
+            userData.userName
         )
 
         if (userInfo == null)

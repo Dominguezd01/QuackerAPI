@@ -15,7 +15,7 @@ const authenticateToken = (req: Request, res: Response, next: NextFunction) => {
             return res.status(403).json({ status: 403, message: "Forbidden" })
 
         // Set the user in the request object for further use
-        //req.token = token
+        req.body.token = token
         next()
     })
 }

@@ -9,25 +9,25 @@ export class RequackController {
         if (!userData || !userData.userId || !userData.quackId)
             return res.status(400).json({ status: 400, msg: "Wrong data" })
 
-        let user = await User.getUserByUserId(userData.userId)
+        let user = await User.getUserById(userData.token.id)
         let quack = await Quack.getQuackByQuackId(userData.quackId)
 
-        if (user == null) {
+        if (user === null) {
             return res.status(404).json({ status: 404, msg: "User not found" })
         }
 
-        if (user == undefined)
+        if (user === undefined)
             return res.status(500).json({
                 status: 500,
                 msg: "Something went wrong, try again later",
             })
 
-        if (quack == undefined)
+        if (quack === undefined)
             return res.status(500).json({
                 status: 500,
                 msg: "Something went wrong, try again later",
             })
-        if (quack == null) {
+        if (quack === null) {
             return res.status(404).json({ status: 404, msg: "Quack not found" })
         }
 
@@ -45,10 +45,10 @@ export class RequackController {
         if (!userData || !userData.userId || !userData.quackId)
             return res.status(400).json({ status: 400, msg: "Wrong data" })
 
-        let user = await User.getUserByUserId(userData.userId)
+        let user = await User.getUserById(userData.token.id)
         let quack = await Quack.getQuackByQuackId(userData.quackId)
 
-        if (user == null) {
+        if (user === null) {
             return res.status(404).json({ status: 404, msg: "User not found" })
         }
 
@@ -63,12 +63,19 @@ export class RequackController {
                 status: 500,
                 msg: "Something went wrong, try again later",
             })
-        if (quack == null)
+
+        if (quack === null)
             return res.status(404).json({ status: 404, msg: "Quack not found" })
 
         let requack = await Requack.getRequackId(user.id, quack.id)
+        if (requack === undefined) {
+            return res.status(500).json({
+                status: 500,
+                msg: "Something went wrong, try again later",
+            })
+        }
 
-        if (requack != null) {
+        if (requack !== null) {
             let deleteRequack = Requack.delete(requack.id)
 
             if (deleteRequack === undefined)
