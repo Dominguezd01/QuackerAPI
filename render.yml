@@ -1,0 +1,7 @@
+services:
+  - type: web
+    name: duckerAPI
+    env: docker
+    repo: https://github.com/Dominguezd01/duckerAPI
+    plan: free
+    autoDeploy: false
