@@ -149,8 +149,8 @@ export class Comment {
                 },
             })
             for (let comment of commentsFound) {
-                comment.comment_like = comment.comment_like.length === 0
-                comment.comment_requack = comment.comment_requack.length === 0
+                comment.comment_like = comment.comment_like.length !== 0
+                comment.comment_requack = comment.comment_requack.length !== 0
             }
             return commentsFound
         } catch (ex) {
