@@ -84,28 +84,34 @@ export class QuacksController {
                     .json({ status: 500, msg: "Something went wrong" })
 
             let quackCreate = await Quack.create(
-                userData.userId,
+                user.id,
                 userData.content,
                 userData.isReply,
                 userData.isQuote,
                 userData.parentPost
             )
 
-            if (quackCreate === undefined)
+            if (quackCreate === undefined) {
                 return res
                     .status(500)
                     .json({ status: 500, msg: "Something went really wrong" })
+            }
 
             if (quackCreate === null) {
                 return res
                     .status(500)
                     .json({ status: 500, msg: "Something went really wrong" })
             }
-
-            return res.status(200).json({ status: 200, quack: quackCreate })
+            let quackCreatedInfo = await Quack.getQuackAndInfoById(
+                quackCreate.id,
+                user.id
+            )
+            console.log(quackCreatedInfo)
+            return res
+                .status(200)
+                .json({ status: 200, quack: quackCreatedInfo })
         } catch (ex) {
             console.log(ex)
-
             return res
                 .status(500)
                 .json({ status: 500, msg: "Something went really bad" })

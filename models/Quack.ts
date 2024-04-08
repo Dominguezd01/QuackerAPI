@@ -6,14 +6,14 @@ const prisma = new PrismaClient()
 
 export class Quack {
     static async create(
-        userId: string,
+        userId: number,
         content: string,
         isReply: boolean,
         isQuote: boolean,
         parentPost: number | null
     ): Promise<null | quacks | undefined> {
         try {
-            let user = await User.getUserByUserId(userId)
+            let user = await User.getUserById(userId)
             if (!user) return null
             let quack = await prisma.quacks.create({
                 data: {
@@ -33,7 +33,6 @@ export class Quack {
                     post_id: quack.id,
                 },
             })
-
             return quack
         } catch (ex) {
             console.log(ex)
@@ -88,6 +87,7 @@ export class Quack {
                             },
                         },
                     },
+                    is_active: true,
                 },
                 select: {
                     id: true,
@@ -230,6 +230,78 @@ export class Quack {
             let quack = await prisma.quacks.findFirst({
                 where: {
                     quack_id: quackId,
+                },
+            })
+
+            return quack
+        } catch (ex) {
+            console.log(ex)
+            return undefined
+        }
+    }
+
+    static async getQuackAndInfoById(quackId: number, userId: number) {
+        try {
+            let quack = await prisma.quacks.findFirst({
+                where: {
+                    id: quackId,
+                },
+
+                select: {
+                    id: true,
+                    quack_id: true,
+                    content: true,
+                    creation_date: true,
+                    parent_post_id: true,
+                    is_quote: true,
+                    is_reply: true,
+                    is_active: true,
+                    user_quack: {
+                        select: {
+                            users: {
+                                select: {
+                                    user_name: true,
+                                    display_name: true,
+                                    profile_picture: true,
+                                },
+                            },
+                        },
+                    },
+                    user_quack_like: {
+                        select: {
+                            post_id: true,
+                        },
+                        where: {
+                            users: {
+                                id: userId,
+                            },
+                        },
+                    },
+                    requacks: {
+                        select: {
+                            post_id: true,
+                        },
+                        where: {
+                            users: {
+                                id: userId,
+                            },
+                        },
+                    },
+
+                    _count: {
+                        select: {
+                            requacks: true,
+                            //comments_comments_quack_id_commentedToquacks: true,
+                            quack_comments: {
+                                where: {
+                                    comments: {
+                                        is_active: true,
+                                    },
+                                },
+                            },
+                            user_quack_like: true,
+                        },
+                    },
                 },
             })
 
