@@ -57,8 +57,6 @@ export class QuacksController {
             const userData = await req.body
 
             if (
-                !userData.userId ||
-                userData.userId.trim() == "" ||
                 !userData.content ||
                 userData.content.trim() == "" ||
                 userData.isReply === undefined ||
