@@ -125,7 +125,7 @@ export class User {
     }
 
     /**
-     * Look for a user with the "user_id" field provided
+     * Looks for a user with the "user_id" field provided
      * @param userId
      */
     static async getUserByUserId(

@@ -6,7 +6,7 @@ import { UserQuackLike } from "../models/UserQuackLike"
 export class UserQuackLikeController {
     static async likeQuack(req: Request, res: Response): Promise<Response> {
         let userData = await req.body
-        if (!userData || !userData.quackId || !userData.userId) {
+        if (!userData || !userData.quackId) {
             return res
                 .status(400)
                 .json({ status: 400, msg: "Check data provided" })
@@ -55,7 +55,7 @@ export class UserQuackLikeController {
 
     static async disLikeQuack(req: Request, res: Response): Promise<Response> {
         let userData = await req.body
-        if (!userData || !userData.quackId || !userData.userId) {
+        if (!userData || !userData.quackId) {
             return res
                 .status(400)
                 .json({ status: 400, msg: "Check data provided" })

@@ -9,13 +9,7 @@ const prisma = new PrismaClient()
 export class CommentsController {
     static async create(req: Request, res: Response) {
         const userData = await req.body
-        console.log(userData)
-        if (
-            !userData ||
-            !userData.userId ||
-            !userData.quackId ||
-            !userData.content
-        ) {
+        if (!userData || !userData.quackId || !userData.content) {
             return res
                 .status(400)
                 .json({ status: 400, msg: "Check data provided" })
@@ -36,16 +30,16 @@ export class CommentsController {
         if (quack === null)
             return res.status(404).json({ status: 404, msg: "Quack not found" })
 
-        let comment = Comment.create(user.id, quack.id, userData.content)
+        let comment = await Comment.create(user.id, quack.id, userData.content)
 
-        if (comment === undefined) {
+        if (comment == undefined) {
             return res.status(500).json({
                 status: 500,
                 msg: "Something went wrong, try again later",
             })
         }
 
-        return res.status(200).json({ status: 200, msg: "Comment created" })
+        return res.status(201).json({ status: 201, comment: comment })
     }
 
     static async delete(req: Request, res: Response) {

@@ -12,7 +12,7 @@ const prisma = new PrismaClient()
 export class Comment {
     static async create(userId: number, quackId: number, content: string) {
         try {
-            let comment = await prisma.comments.create({
+            let commentCreate = await prisma.comments.create({
                 data: {
                     content: content,
                     creation_date: new Date(),
@@ -20,10 +20,9 @@ export class Comment {
                     comment_id: uuidv4(),
                 },
             })
-
             let commentQuack = await prisma.quack_comments.create({
                 data: {
-                    comment_id: comment.id,
+                    comment_id: commentCreate.id,
                     quack_id: quackId,
                 },
             })
@@ -31,11 +30,76 @@ export class Comment {
             let comment_user = await prisma.user_comments.create({
                 data: {
                     user_id: userId,
-                    comment_id: comment.id,
+                    comment_id: commentCreate.id,
                 },
             })
 
-            return true
+            let comment: any = await prisma.comments.findFirst({
+                select: {
+                    comment_id: true,
+                    content: true,
+                    creation_date: true,
+                    user_comments: {
+                        select: {
+                            users: {
+                                select: {
+                                    user_name: true,
+                                    display_name: true,
+                                    profile_picture: true,
+                                },
+                                where: {
+                                    is_active: true,
+                                    id: userId,
+                                },
+                            },
+                        },
+                        where: {
+                            id: comment_user.id,
+                        },
+                    },
+                    comment_like: {
+                        select: {
+                            id: true,
+                        },
+                        where: {
+                            user_id: userId,
+                        },
+                    },
+                    comment_requack: {
+                        select: {
+                            id: true,
+                        },
+                        where: {
+                            user_id: userId,
+                        },
+                    },
+
+                    _count: {
+                        select: {
+                            comment_like: true,
+                            comment_requack: true,
+                            comments_comment_comments_comment_comment_idTocomments:
+                                {
+                                    where: {
+                                        comments_comments_comment_comment_commented_idTocomments:
+                                            {
+                                                is_active: true,
+                                            },
+                                    },
+                                },
+                        },
+                    },
+                },
+                where: {
+                    is_active: true,
+                    id: commentCreate.id,
+                },
+            })
+
+            comment.comment_like = comment.comment_like.length !== 0
+            comment.comment_requack = comment.comment_requack.length !== 0
+
+            return comment
         } catch (ex) {
             console.error(ex)
             return undefined

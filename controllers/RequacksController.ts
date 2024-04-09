@@ -6,7 +6,7 @@ export class RequackController {
     static async requack(req: Request, res: Response): Promise<Response> {
         let userData = await req.body
 
-        if (!userData || !userData.userId || !userData.quackId)
+        if (!userData || !userData.quackId)
             return res.status(400).json({ status: 400, msg: "Wrong data" })
 
         let user = await User.getUserById(userData.token.id)
@@ -42,7 +42,7 @@ export class RequackController {
     static async deleteRequack(req: Request, res: Response): Promise<Response> {
         let userData = await req.body
 
-        if (!userData || !userData.userId || !userData.quackId)
+        if (!userData || !userData.quackId)
             return res.status(400).json({ status: 400, msg: "Wrong data" })
 
         let user = await User.getUserById(userData.token.id)
