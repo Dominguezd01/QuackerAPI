@@ -286,12 +286,14 @@ export class User {
                 },
             })
 
+            let isUser: boolean = userCheck.id == user?.id
             delete userCheck.id
 
             console.log(user)
             return {
                 user: userCheck,
                 followed: followed == null ? false : true,
+                isUser: isUser,
             }
         } catch (ex) {
             console.log(ex)
