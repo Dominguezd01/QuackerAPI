@@ -133,6 +133,34 @@ export class Comment {
         }
     }
 
+    static async getCommentByCommentIdNoUserInfo(commentId: string) {
+        try {
+            let comment = await prisma.comments.findFirst({
+                where: {
+                    comment_id: commentId,
+                    is_active: true,
+                },
+            })
+            return comment
+        } catch (ex) {
+            console.error(ex)
+            return undefined
+        }
+    }
+    static async getCommentById(commentId: number) {
+        try {
+            let comment = await prisma.comments.findFirst({
+                where: {
+                    id: commentId,
+                    is_active: true,
+                },
+            })
+            return comment
+        } catch (ex) {
+            console.error(ex)
+            return undefined
+        }
+    }
     static async delete(id: number) {
         try {
             return await prisma.comments.update({

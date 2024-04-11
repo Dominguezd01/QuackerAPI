@@ -11,6 +11,7 @@ import { SearchController } from "./controllers/SearchController"
 import { Quack } from "./models/Quack"
 import { PrismaClient } from "@prisma/client"
 import { CommentLikeController } from "./controllers/CommentLikeController"
+import { CommentRequackController } from "./controllers/CommentRequackController"
 
 //Initialization variables
 const app = express()
@@ -121,6 +122,18 @@ app.delete(
     "/comments/comment/dislike",
     authenticateToken,
     CommentLikeController.disLikeQuack
+)
+
+app.post(
+    "/comments/comment/requack",
+    authenticateToken,
+    CommentRequackController.create
+)
+
+app.delete(
+    "/comments/comment/deleteRequack",
+    authenticateToken,
+    CommentRequackController.delete
 )
 /**
  * Search related routes
