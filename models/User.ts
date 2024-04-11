@@ -4,9 +4,7 @@ import { checkPass, encodePass } from "../lib/passwordFunctions"
 import { v4 as uuidv4 } from "uuid"
 import { EmailsController } from "../controllers/EmailsController"
 import { assign } from "nodemailer/lib/shared"
-const prisma = new PrismaClient({
-    log: ["query"],
-})
+const prisma = new PrismaClient()
 export class User {
     /**
      * Creates a user with the data provided

@@ -5,9 +5,7 @@ import {
     user_quack_like,
     users,
 } from "@prisma/client"
-const prisma = new PrismaClient({
-    log: ["query", "info", "error"],
-})
+const prisma = new PrismaClient()
 export class UserQuackLike {
     /**
      * Create the relation between the user id and the quack id

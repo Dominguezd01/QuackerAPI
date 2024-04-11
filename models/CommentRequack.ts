@@ -7,9 +7,7 @@ import {
     user_quack_like,
     users,
 } from "@prisma/client"
-const prisma = new PrismaClient({
-    log: ["query", "info", "error"],
-})
+const prisma = new PrismaClient()
 export class CommentRequack {
     static async create(userId: number, commentId: number) {
         try {
