@@ -106,7 +106,7 @@ export class UsersControllers {
                 token: token,
             })
         } catch (ex) {
-            console.log(ex)
+            console.error(ex)
             return res
                 .status(500)
                 .json({ status: 500, msg: "Oops...Something broke" })

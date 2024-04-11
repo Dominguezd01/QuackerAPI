@@ -92,8 +92,6 @@ export class CommentsController {
     }
 
     static async getCommentsFromQuack(req: Request, res: Response) {
-        console.log("BODY")
-        console.log(await req.body)
         const { quackId } = req.params
         if (!quackId) {
             return res

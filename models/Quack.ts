@@ -35,7 +35,7 @@ export class Quack {
             })
             return quack
         } catch (ex) {
-            console.log(ex)
+            console.error(ex)
             return undefined
         }
     }
@@ -53,7 +53,7 @@ export class Quack {
             })
             return true
         } catch (ex) {
-            console.log(ex)
+            console.error(ex)
             return false
         }
     }
@@ -143,7 +143,6 @@ export class Quack {
                     },
                 },
             })
-            console.log(quacks.length)
             return quacks
         } catch (error) {
             console.error("Error retrieving quacks:", error)
@@ -220,7 +219,7 @@ export class Quack {
 
             return quack
         } catch (ex) {
-            console.log(ex)
+            console.error(ex)
             return undefined
         }
     }
@@ -235,7 +234,7 @@ export class Quack {
 
             return quack
         } catch (ex) {
-            console.log(ex)
+            console.error(ex)
             return undefined
         }
     }
@@ -307,7 +306,7 @@ export class Quack {
 
             return quack
         } catch (ex) {
-            console.log(ex)
+            console.error(ex)
             return undefined
         }
     }

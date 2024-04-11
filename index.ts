@@ -10,6 +10,7 @@ import { CommentsController } from "./controllers/CommentsController"
 import { SearchController } from "./controllers/SearchController"
 import { Quack } from "./models/Quack"
 import { PrismaClient } from "@prisma/client"
+import { CommentLikeController } from "./controllers/CommentLikeController"
 
 //Initialization variables
 const app = express()
@@ -108,6 +109,18 @@ app.get(
     "/comments/comment/getComments/:quackId",
     authenticateToken,
     CommentsController.getCommentsFromQuack
+)
+
+app.post(
+    "/comments/comment/like",
+    authenticateToken,
+    CommentLikeController.likeQuack
+)
+
+app.delete(
+    "/comments/comment/dislike",
+    authenticateToken,
+    CommentLikeController.disLikeQuack
 )
 /**
  * Search related routes

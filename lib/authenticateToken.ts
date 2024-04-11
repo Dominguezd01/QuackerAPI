@@ -10,7 +10,7 @@ const authenticateToken = (req: Request, res: Response, next: NextFunction) => {
         return res.status(401).json({ status: 401, message: "Unauthorized" })
 
     jwt.verify(token, SECRET, (err: any, token: any) => {
-        console.log(err)
+        console.error(err)
         if (err)
             return res.status(403).json({ status: 403, message: "Forbidden" })
 

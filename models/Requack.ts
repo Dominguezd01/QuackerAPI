@@ -25,7 +25,7 @@ export class Requack {
             })
             return true
         } catch (ex) {
-            console.log(ex)
+            console.error(ex)
             return undefined
         }
     }
@@ -44,7 +44,7 @@ export class Requack {
             })
             return true
         } catch (ex) {
-            console.log(ex)
+            console.error(ex)
             return undefined
         }
     }
@@ -63,7 +63,7 @@ export class Requack {
 
             return requack
         } catch (ex) {
-            console.log(ex)
+            console.error(ex)
             return undefined
         }
     }

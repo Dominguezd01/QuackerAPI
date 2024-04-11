@@ -104,12 +104,11 @@ export class QuacksController {
                 quackCreate.id,
                 user.id
             )
-            console.log(quackCreatedInfo)
             return res
                 .status(200)
                 .json({ status: 200, quack: quackCreatedInfo })
         } catch (ex) {
-            console.log(ex)
+            console.error(ex)
             return res
                 .status(500)
                 .json({ status: 500, msg: "Something went really bad" })

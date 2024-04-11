@@ -22,7 +22,7 @@ export class UserFollows {
 
             return relation
         } catch (ex) {
-            console.log(ex)
+            console.error(ex)
             return undefined
         }
     }
@@ -39,7 +39,7 @@ export class UserFollows {
 
             return relation
         } catch (ex) {
-            console.log(ex)
+            console.error(ex)
             return undefined
         }
     }
@@ -63,7 +63,7 @@ export class UserFollows {
 
             return exists
         } catch (ex) {
-            console.log(ex)
+            console.error(ex)
             return undefined
         }
     }

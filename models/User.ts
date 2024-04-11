@@ -41,7 +41,6 @@ export class User {
                     ],
                 },
             })
-            console.log(user)
             if (user != null) return null
             user = await prisma.users.create({
                 data: {
@@ -59,7 +58,7 @@ export class User {
             EmailsController.sendEmailRegister(user, host)
             return true
         } catch (ex) {
-            console.log(ex)
+            console.error(ex)
             return false
         }
     }
@@ -89,8 +88,7 @@ export class User {
 
             return user
         } catch (ex) {
-            console.log("Error in login")
-            console.log(ex)
+            console.error(ex)
             return undefined
         }
     }
@@ -118,8 +116,7 @@ export class User {
 
             return user
         } catch (ex) {
-            console.log("Error in login")
-            console.log(ex)
+            console.error(ex)
             return undefined
         }
     }
@@ -148,8 +145,7 @@ export class User {
             if (user == null) return null
 
             return user
-        } catch (e) {
-            console.log(e)
+        } catch (ex) {
             return undefined
         }
     }
@@ -172,8 +168,8 @@ export class User {
             if (user == null) return null
 
             return user
-        } catch (e) {
-            console.log(e)
+        } catch (ex) {
+            console.error(ex)
             return undefined
         }
     }
@@ -194,7 +190,7 @@ export class User {
             })
             return true
         } catch (ex) {
-            console.log(ex)
+            console.error(ex)
             return false
         }
     }
@@ -215,7 +211,7 @@ export class User {
 
             return user
         } catch (ex) {
-            console.log(ex)
+            console.error(ex)
             return undefined
         }
     }
@@ -288,15 +284,13 @@ export class User {
 
             let isUser: boolean = userCheck.id == user?.id
             delete userCheck.id
-
-            console.log(user)
             return {
                 user: userCheck,
                 followed: followed == null ? false : true,
                 isUser: isUser,
             }
         } catch (ex) {
-            console.log(ex)
+            console.error(ex)
             return null
         }
     }
@@ -323,7 +317,7 @@ export class User {
                 },
             })
         } catch (ex) {
-            console.log(ex)
+            console.error(ex)
             return undefined
         }
     }
