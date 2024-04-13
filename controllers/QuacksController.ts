@@ -67,10 +67,11 @@ export class QuacksController {
                     .status(400)
                     .json({ status: 400, msg: "Check data provided" })
             }
-
-            if (userData.content.lenght > 500)
-                res.status(400).json({ status: 400, msg: "Content too long" })
-
+            if (userData.content.length > 135) {
+                return res
+                    .status(413)
+                    .json({ status: 413, msg: "Content too long" })
+            }
             let user = await User.getUserById(userData.token.id)
 
             if (user === null)

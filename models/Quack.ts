@@ -155,6 +155,7 @@ export class Quack {
             let quack = await prisma.quacks.findFirst({
                 where: {
                     quack_id: quackId,
+                    is_active: true,
                 },
 
                 select: {
