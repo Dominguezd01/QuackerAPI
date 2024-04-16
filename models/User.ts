@@ -230,6 +230,12 @@ export class User {
                 },
             })
 
+            let userChecked = await prisma.users.findFirst({
+                where: { user_name: userProfileCheck, is_active: true },
+            })
+            if (user === null) return null
+            if (userChecked === null) return null
+
             let userCheck: any = await prisma.users.findFirst({
                 where: {
                     user_name: userProfileCheck,
@@ -243,26 +249,9 @@ export class User {
                     display_name: true,
                     profile_picture: true,
                     bio: true,
-                    user_quack: {
-                        select: {
-                            quacks: {
-                                select: {
-                                    quack_id: true,
-                                    content: true,
-
-                                    _count: {
-                                        select: {
-                                            requacks: true,
-                                            user_quack_like: true,
-                                            quack_comments: true,
-                                        },
-                                    },
-                                },
-                            },
-                        },
-                    },
                     _count: {
                         select: {
+                            user_quack: true,
                             //user followed count of users
                             user_follows_user_follows_user_idTousers: true,
                             //number of followers the user has
@@ -292,6 +281,7 @@ export class User {
             return null
         }
     }
+
     /**
      * Gets the user by parameter
      * @param id user id

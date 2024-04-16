@@ -311,4 +311,82 @@ export class Quack {
             return undefined
         }
     }
+
+    static async getUserCheckedQuacks(userId: number, userIdCheked: number) {
+        try {
+            let quack = await prisma.quacks.findMany({
+                where: {
+                    is_active: true,
+
+                    user_quack: {
+                        some: {
+                            user_id: userIdCheked,
+                        },
+                    },
+                },
+
+                select: {
+                    id: true,
+                    quack_id: true,
+                    content: true,
+                    creation_date: true,
+                    parent_post_id: true,
+                    is_quote: true,
+                    is_reply: true,
+                    is_active: true,
+                    user_quack: {
+                        select: {
+                            users: {
+                                select: {
+                                    user_name: true,
+                                    display_name: true,
+                                    profile_picture: true,
+                                },
+                            },
+                        },
+                    },
+                    user_quack_like: {
+                        select: {
+                            post_id: true,
+                        },
+                        where: {
+                            users: {
+                                id: userId,
+                            },
+                        },
+                    },
+                    requacks: {
+                        select: {
+                            post_id: true,
+                        },
+                        where: {
+                            users: {
+                                id: userId,
+                            },
+                        },
+                    },
+
+                    _count: {
+                        select: {
+                            requacks: true,
+                            //comments_comments_quack_id_commentedToquacks: true,
+                            quack_comments: {
+                                where: {
+                                    comments: {
+                                        is_active: true,
+                                    },
+                                },
+                            },
+                            user_quack_like: true,
+                        },
+                    },
+                },
+            })
+
+            return quack
+        } catch (ex) {
+            console.error(ex)
+            return undefined
+        }
+    }
 }

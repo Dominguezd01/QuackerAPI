@@ -115,4 +115,44 @@ export class QuacksController {
                 .json({ status: 500, msg: "Something went really bad" })
         }
     }
+
+    static async getUserQuacks(req: Request, res: Response): Promise<Response> {
+        let userData = await req.body
+
+        if (!userData || !userData.checkProfileName) {
+            return res
+                .status(400)
+                .json({ status: 400, msg: "Check data provided" })
+        }
+
+        let user = await User.getUserById(userData.token.id)
+        let userCheck = await User.getUserInfoByUserName(
+            userData.checkProfileName
+        )
+
+        if (user === null) {
+            return res.status(401)
+        }
+        if (userCheck === null) {
+            return res
+                .status(404)
+                .json({ status: 404, msg: "The user you wanted doesnt exists" })
+        }
+
+        if (user === undefined || userCheck === undefined) {
+            return res
+                .status(500)
+                .json({ status: 500, msg: "Internal server error" })
+        }
+
+        let quacks = await Quack.getUserCheckedQuacks(user.id, userCheck.id)
+
+        if (quacks === null) {
+            return res.status(404).json({ status: 404 })
+        }
+
+        if (quacks === undefined) return res.status(500).json({ status: 500 })
+
+        return res.status(200).json({ status: 200, quacks: quacks })
+    }
 }

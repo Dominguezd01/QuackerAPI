@@ -81,6 +81,7 @@ app.post(
     authenticateToken,
     UserQuackLikeController.likeQuack
 )
+
 app.delete(
     "/quacks/quack/dislike",
     authenticateToken,
@@ -93,7 +94,11 @@ app.delete(
     authenticateToken,
     RequackController.deleteRequack
 )
-
+app.post(
+    "/quacks/getUserQuacks",
+    authenticateToken,
+    QuacksController.getUserQuacks
+)
 app.post(
     "/comments/comment/create",
     authenticateToken,
@@ -135,6 +140,7 @@ app.delete(
     authenticateToken,
     CommentRequackController.delete
 )
+
 /**
  * Search related routes
  */
