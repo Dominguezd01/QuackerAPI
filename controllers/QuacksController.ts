@@ -155,4 +155,101 @@ export class QuacksController {
 
         return res.status(200).json({ status: 200, quacks: quacks })
     }
+
+    static async editQuack(req: Request, res: Response): Promise<Response> {
+        const userData = await req.body
+        console.log(userData)
+        if (
+            !userData ||
+            !userData.quackId ||
+            !userData.content ||
+            userData.content.trim() === ""
+        ) {
+            return res
+                .status(400)
+                .json({ status: 400, msg: "Quack id or content missing" })
+        }
+
+        if (userData.content.length > 135) {
+            return res
+                .status(413)
+                .json({ status: 413, msg: "Content too long" })
+        }
+
+        let user = await User.getUserById(userData.token.id)
+        let quack = await Quack.getQuackByQuackIdIsActive(userData.quackId)
+
+        if (user === undefined || quack === undefined) {
+            return res.status(500).json({ status: 500 })
+        }
+
+        if (user === null) {
+            return res.status(401).json({ status: 401, msg: "Unauthorized" })
+        }
+
+        if (quack === null) {
+            return res.status(404).json({ status: 404, msg: "Quack not found" })
+        }
+
+        let isUserQuack = await UserQuack.isUserQuack(user.id, quack.id)
+
+        if (isUserQuack === undefined) {
+            return res.status(500).json({ status: 500 })
+        }
+
+        if (!isUserQuack) {
+            return res.status(403).json({ status: 403, msg: "Forbidden" })
+        }
+
+        let edit = await Quack.edit(quack.id, userData.content)
+
+        if (edit == undefined) {
+            return res.status(500).json({ status: 500 })
+        }
+        console.log("NO ES TUYO")
+        return res.status(200).json({ status: 200 })
+    }
+
+    static async deleteQuack(req: Request, res: Response): Promise<Response> {
+        const userData = await req.body
+
+        if (!userData || !userData.quackId) {
+            return res
+                .status(400)
+                .json({ status: 400, msg: "Quack id missing" })
+        }
+
+        let user = await User.getUserById(userData.token.id)
+
+        let quack = await Quack.getQuackByQuackIdIsActive(userData.quackId)
+        if (user === undefined || quack === undefined) {
+            return res.status(500).json({ status: 500 })
+        }
+
+        if (user === null) {
+            return res.status(401).json({ status: 401, msg: "Unauthorized" })
+        }
+
+        if (quack === null) {
+            return res.status(404).json({ status: 404, msg: "Quack not found" })
+        }
+
+        let isUserQuack = await UserQuack.isUserQuack(user.id, quack.id)
+
+        if (isUserQuack === undefined) {
+            return res.status(500).json({ status: 500 })
+        }
+
+        if (!isUserQuack) {
+            return res.status(403).json({ status: 403, msg: "Forbidden" })
+        }
+
+        let quackDeleted = await Quack.delete(quack.id)
+
+        if (quackDeleted == undefined) {
+            return res.status(500).json({ status: 500, msg: "Internal error" })
+        }
+
+        return res.status(200).json({ status: 200 })
+    }
 }

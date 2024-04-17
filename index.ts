@@ -12,6 +12,7 @@ import { Quack } from "./models/Quack"
 import { PrismaClient } from "@prisma/client"
 import { CommentLikeController } from "./controllers/CommentLikeController"
 import { CommentRequackController } from "./controllers/CommentRequackController"
+import { getViewsDir } from "./lib/getViewsDir"
 
 //Initialization variables
 const app = express()
@@ -76,6 +77,15 @@ app.post(
     authenticateToken,
     QuacksController.createQuack
 )
+
+app.patch(
+    "/quacks/quack/delete",
+    authenticateToken,
+    QuacksController.deleteQuack
+)
+
+app.patch("/quacks/quack/edit", authenticateToken, QuacksController.editQuack)
+
 app.post(
     "/quacks/quack/like",
     authenticateToken,
@@ -147,5 +157,6 @@ app.delete(
 app.post("/search", authenticateToken, SearchController.search)
 
 app.listen(PORT, () => {
+    getViewsDir()
     console.log(`http://localhost:${PORT}`)
 })

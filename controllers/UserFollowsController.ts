@@ -26,6 +26,11 @@ export class UserFollowsController {
                 .status(500)
                 .json({ status: 500, msg: "Something went really wrong" })
         }
+        if (userData.token.id === userFollowed?.id)
+            return res.status(418).json({
+                status: 418,
+                msg: "You cant unfollow your own account",
+            })
 
         if (user === null || userFollowed === null) {
             return res.status(400).json({ status: 400, msg: "Users not found" })
@@ -64,17 +69,15 @@ export class UserFollowsController {
                 .json({ status: 400, msg: "Check the data provided" })
         }
 
-        if (userData.token.id === userData.userFollowedId)
-            return res.status(418).json({
-                status: 418,
-                msg: "You cant unfollow your own account",
-            })
-
         let user = await User.getUserById(userData.token.id)
         let userFollowed = await User.getUserInfoByUserName(
             userData.userNameFollowed
         )
-
+        if (userData.token.id === userFollowed?.id)
+            return res.status(418).json({
+                status: 418,
+                msg: "You cant unfollow your own account",
+            })
         if (user === undefined || userFollowed === undefined) {
             return res
                 .status(500)

@@ -1,11 +1,61 @@
 generator client {
-  provider = "prisma-client-js"
+  provider      = "prisma-client-js"
   binaryTargets = ["native", "debian-openssl-3.0.x"]
 }
 
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
+}
+
+model comment_like {
+  id         Int       @id @default(autoincrement())
+  comment_id Int?
+  user_id    Int?
+  comments   comments? @relation(fields: [comment_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  users      users?    @relation(fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@unique([comment_id, user_id], map: "uq_like_comment")
+}
+
+model comment_requack {
+  id         Int       @id @default(autoincrement())
+  comment_id Int?
+  user_id    Int?
+  comments   comments? @relation(fields: [comment_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  users      users?    @relation(fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@unique([comment_id, user_id], map: "uq_requack_comment")
+}
+
+model comments {
+  id                                                               Int                @id @default(autoincrement())
+  comment_id                                                       String?            @db.VarChar(60)
+  content                                                          String?
+  is_active                                                        Boolean?
+  creation_date                                                    DateTime?          @default(now()) @db.Timestamp(6)
+  comment_like                                                     comment_like[]
+  comment_requack                                                  comment_requack[]
+  comments_comment_comments_comment_comment_commented_idTocomments comments_comment[] @relation("comments_comment_comment_commented_idTocomments")
+  comments_comment_comments_comment_comment_idTocomments           comments_comment[] @relation("comments_comment_comment_idTocomments")
+  quack_comments                                                   quack_comments[]
+  user_comments                                                    user_comments[]
+}
+
+model comments_comment {
+  id                                                       Int       @id @default(autoincrement())
+  comment_id                                               Int?
+  comment_commented_id                                     Int?
+  comments_comments_comment_comment_commented_idTocomments comments? @relation("comments_comment_comment_commented_idTocomments", fields: [comment_commented_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  comments_comments_comment_comment_idTocomments           comments? @relation("comments_comment_comment_idTocomments", fields: [comment_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model quack_comments {
+  id         Int       @id @default(autoincrement())
+  quack_id   Int?
+  comment_id Int?
+  comments   comments? @relation(fields: [comment_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "quack_comments_comments_fk")
+  quacks     quacks?   @relation(fields: [quack_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "quack_comments_quacks_fk")
 }
 
 model quacks {
@@ -31,6 +81,14 @@ model requacks {
   users   users  @relation(fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "requacks_user_id_foreign")
 }
 
+model user_comments {
+  id         Int       @id @default(autoincrement())
+  comment_id Int?
+  user_id    Int?
+  comments   comments? @relation(fields: [comment_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  users      users?    @relation(fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+}
+
 model user_follows {
   id                                         Int   @id @default(autoincrement())
   user_id                                    Int
@@ -39,6 +97,14 @@ model user_follows {
   users_user_follows_user_idTousers          users @relation("user_follows_user_idTousers", fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "user_follows_user_id_following_foreign")
 
   @@unique([user_id, user_id_followed], map: "unique_user_follow")
+}
+
+model user_quack {
+  id      Int    @id(map: "user_quak_pkey") @default(autoincrement())
+  post_id Int
+  user_id Int
+  quacks  quacks @relation(fields: [post_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "user_quak_post_id_foreign")
+  users   users  @relation(fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "user_quak_user_id_foreign")
 }
 
 model user_quack_like {
@@ -70,70 +136,4 @@ model users {
   user_follows_user_follows_user_idTousers          user_follows[]    @relation("user_follows_user_idTousers")
   user_quack                                        user_quack[]
   user_quack_like                                   user_quack_like[]
-}
-
-model comments {
-  id                                                               Int                @id @default(autoincrement())
-  comment_id                                                       String?            @db.VarChar(60)
-  content                                                          String?
-  is_active                                                        Boolean?
-  creation_date                                                    DateTime?          @default(now()) @db.Timestamp(6)
-  comment_like                                                     comment_like[]
-  comment_requack                                                  comment_requack[]
-  comments_comment_comments_comment_comment_commented_idTocomments comments_comment[] @relation("comments_comment_comment_commented_idTocomments")
-  comments_comment_comments_comment_comment_idTocomments           comments_comment[] @relation("comments_comment_comment_idTocomments")
-  quack_comments                                                   quack_comments[]
-  user_comments                                                    user_comments[]
-}
-
-model user_quack {
-  id      Int    @id(map: "user_quak_pkey") @default(autoincrement())
-  post_id Int
-  user_id Int
-  quacks  quacks @relation(fields: [post_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "user_quak_post_id_foreign")
-  users   users  @relation(fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "user_quak_user_id_foreign")
-}
-
-model quack_comments {
-  id         Int       @id @default(autoincrement())
-  quack_id   Int?
-  comment_id Int?
-  comments   comments? @relation(fields: [comment_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "quack_comments_comments_fk")
-  quacks     quacks?   @relation(fields: [quack_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "quack_comments_quacks_fk")
-}
-
-model comment_like {
-  id         Int       @id @default(autoincrement())
-  comment_id Int?
-  user_id    Int?
-  comments   comments? @relation(fields: [comment_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  users      users?    @relation(fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
-
-  @@unique([comment_id, user_id], map: "uq_like_comment")
-}
-
-model comment_requack {
-  id         Int       @id @default(autoincrement())
-  comment_id Int?
-  user_id    Int?
-  comments   comments? @relation(fields: [comment_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  users      users?    @relation(fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
-
-  @@unique([comment_id, user_id], map: "uq_requack_comment")
-}
-
-model comments_comment {
-  id                                                       Int       @id @default(autoincrement())
-  comment_id                                               Int?
-  comment_commented_id                                     Int?
-  comments_comments_comment_comment_commented_idTocomments comments? @relation("comments_comment_comment_commented_idTocomments", fields: [comment_commented_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  comments_comments_comment_comment_idTocomments           comments? @relation("comments_comment_comment_idTocomments", fields: [comment_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
-}
-
-model user_comments {
-  id         Int       @id @default(autoincrement())
-  comment_id Int?
-  user_id    Int?
-  comments   comments? @relation(fields: [comment_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  users      users?    @relation(fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
 }

@@ -16,7 +16,7 @@ export class SearchController {
                 .json({ status: 400, msg: "Check data provided" })
         }
 
-        const searchTerm: string = userData.searchTerm
+        let searchTerm: string = userData.searchTerm
 
         let user = await prisma.users.findFirst({
             where: { id: userData.token.id },
@@ -25,43 +25,11 @@ export class SearchController {
         if (user === null) return res.status(401).json({ status: 401 })
 
         if (searchTerm.startsWith("@")) {
+            searchTerm = searchTerm.split("@")[1]
+            console.log("EMPIEZA POR @")
             let usersFound: any = await prisma.users.findMany({
                 select: {
-                    user_name: true,
-                    display_name: true,
-                    profile_picture: true,
-
-                    _count: {
-                        select: {
-                            user_follows_user_follows_user_id_followedTousers:
-                                true,
-                            user_follows_user_follows_user_idTousers: true,
-                        },
-                    },
-                },
-                where: {
-                    user_name: {
-                        contains: searchTerm,
-                    },
-                    AND: {
-                        is_active: true,
-                    },
-                },
-            })
-
-            searchResult.users = usersFound
-            if (usersFound.length === 0) {
-                searchResult.noResults = true
-            } else {
-                searchResult.noResults = false
-                searchResult.users = usersFound
-            }
-            return res
-                .status(200)
-                .json({ status: 200, searchResult: searchResult })
-        } else {
-            let usersFound: any[] = await prisma.users.findMany({
-                select: {
+                    id: true,
                     user_name: true,
                     display_name: true,
                     profile_picture: true,
@@ -86,11 +54,58 @@ export class SearchController {
                     user_name: {
                         contains: searchTerm,
                     },
-                    AND: {
-                        is_active: true,
-                        NOT: {
-                            id: user.id,
+
+                    is_active: true,
+                },
+            })
+
+            for (let user of usersFound) {
+                user.followed =
+                    user.user_follows_user_follows_user_id_followedTousers
+                        .length !== 0
+                user.isUser = user.id === userData.token.id
+                delete user.id
+                delete user.user_follows_user_follows_user_id_followedTousers
+            }
+
+            if (usersFound.length === 0) {
+                searchResult.noResults = true
+            } else {
+                searchResult.noResults = false
+                searchResult.users = usersFound
+            }
+            console.log(searchResult)
+            return res
+                .status(200)
+                .json({ status: 200, searchResult: searchResult })
+        } else {
+            let usersFound: any[] = await prisma.users.findMany({
+                select: {
+                    id: true,
+                    user_name: true,
+                    display_name: true,
+                    profile_picture: true,
+                    bio: true,
+                    user_follows_user_follows_user_id_followedTousers: {
+                        select: {
+                            id: true,
                         },
+                        where: {
+                            user_id: user.id,
+                        },
+                    },
+                    _count: {
+                        select: {
+                            user_follows_user_follows_user_id_followedTousers:
+                                true,
+                            user_follows_user_follows_user_idTousers: true,
+                        },
+                    },
+                },
+                where: {
+                    is_active: true,
+                    user_name: {
+                        contains: searchTerm,
                     },
                 },
             })
@@ -98,6 +113,48 @@ export class SearchController {
                 user.followed =
                     user.user_follows_user_follows_user_id_followedTousers
                         .length !== 0
+                user.isUser = user.id === userData.token.id
+                delete user.id
+                delete user.user_follows_user_follows_user_id_followedTousers
+            }
+
+            let usersFoundDisplayName: any[] = await prisma.users.findMany({
+                select: {
+                    id: true,
+                    user_name: true,
+                    display_name: true,
+                    profile_picture: true,
+                    bio: true,
+                    user_follows_user_follows_user_id_followedTousers: {
+                        select: {
+                            id: true,
+                        },
+                        where: {
+                            user_id: user.id,
+                        },
+                    },
+                    _count: {
+                        select: {
+                            user_follows_user_follows_user_id_followedTousers:
+                                true,
+                            user_follows_user_follows_user_idTousers: true,
+                        },
+                    },
+                },
+                where: {
+                    is_active: true,
+                    display_name: {
+                        contains: searchTerm,
+                    },
+                },
+            })
+            for (let user of usersFoundDisplayName) {
+                user.followed =
+                    user.user_follows_user_follows_user_id_followedTousers
+                        .length !== 0
+
+                user.isUser = user.id === userData.token.id
+                delete user.id
                 delete user.user_follows_user_follows_user_id_followedTousers
             }
             let quacksFound: any[] = await prisma.quacks.findMany({
@@ -166,15 +223,21 @@ export class SearchController {
                     },
                 },
             })
+            console.log({ usersFound, quacksFound, usersFoundDisplayName })
 
-            if (usersFound.length === 0 && quacksFound.length === 0) {
+            if (
+                usersFound.length === 0 &&
+                quacksFound.length === 0 &&
+                usersFoundDisplayName.length === 0
+            ) {
                 searchResult.noResults = true
             } else {
                 searchResult.users = usersFound
+                searchResult.users.push(...usersFoundDisplayName)
                 searchResult.quacks = quacksFound
                 searchResult.noResults = false
             }
-
+            console.log(searchResult)
             return res
                 .status(200)
                 .json({ status: 200, searchResult: searchResult })

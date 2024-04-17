@@ -40,10 +40,12 @@ export class Quack {
         }
     }
 
-    static async delete(quackId: number | undefined | null): Promise<boolean> {
+    static async delete(
+        quackId: number | undefined | null
+    ): Promise<boolean | undefined> {
         try {
             if (quackId == undefined || quackId == null) return false
-            prisma.quacks.update({
+            await prisma.quacks.update({
                 where: {
                     id: quackId,
                 },
@@ -54,7 +56,7 @@ export class Quack {
             return true
         } catch (ex) {
             console.error(ex)
-            return false
+            return undefined
         }
     }
 
@@ -70,18 +72,15 @@ export class Quack {
             let daysInterval = new Date(
                 new Date().setDate(new Date().getDate() - 30)
             )
-            const quacks = await prisma.quacks.findMany({
+            const quacks: any = await prisma.quacks.findMany({
                 where: {
                     user_quack: {
                         some: {
                             users: {
                                 user_follows_user_follows_user_id_followedTousers:
                                     {
-                                        none: {
+                                        some: {
                                             user_id: user.id,
-                                            AND: [
-                                                { NOT: [{ user_id: user.id }] },
-                                            ],
                                         },
                                     },
                             },
@@ -143,6 +142,12 @@ export class Quack {
                     },
                 },
             })
+
+            for (let quack of quacks) {
+                quack.isFromUser = quack.user_quack[0].id === user.id
+                delete quack.user_quack[0].id
+                delete quack.id
+            }
             return quacks
         } catch (error) {
             console.error("Error retrieving quacks:", error)
@@ -152,7 +157,7 @@ export class Quack {
 
     static async getQuackInfo(quackId: string, userId: number) {
         try {
-            let quack = await prisma.quacks.findFirst({
+            let quack: any = await prisma.quacks.findFirst({
                 where: {
                     quack_id: quackId,
                     is_active: true,
@@ -218,6 +223,10 @@ export class Quack {
                 },
             })
 
+            if (quack !== null) {
+                quack.isFromUser = quack?.user_quack[0].users.id === userId
+            }
+
             return quack
         } catch (ex) {
             console.error(ex)
@@ -230,6 +239,22 @@ export class Quack {
             let quack = await prisma.quacks.findFirst({
                 where: {
                     quack_id: quackId,
+                },
+            })
+
+            return quack
+        } catch (ex) {
+            console.error(ex)
+            return undefined
+        }
+    }
+
+    static async getQuackByQuackIdIsActive(quackId: string) {
+        try {
+            let quack = await prisma.quacks.findFirst({
+                where: {
+                    quack_id: quackId,
+                    is_active: true,
                 },
             })
 
@@ -314,7 +339,7 @@ export class Quack {
 
     static async getUserCheckedQuacks(userId: number, userIdCheked: number) {
         try {
-            let quack = await prisma.quacks.findMany({
+            let quacks: any = await prisma.quacks.findMany({
                 where: {
                     is_active: true,
 
@@ -338,6 +363,7 @@ export class Quack {
                         select: {
                             users: {
                                 select: {
+                                    id: true,
                                     user_name: true,
                                     display_name: true,
                                     profile_picture: true,
@@ -380,6 +406,29 @@ export class Quack {
                             user_quack_like: true,
                         },
                     },
+                },
+            })
+
+            for (let quack of quacks) {
+                quack.isFromUser = quack.user_quack[0].users.id === userId
+
+                delete quack.user_quack[0].users.id
+            }
+            return quacks
+        } catch (ex) {
+            console.error(ex)
+            return undefined
+        }
+    }
+
+    static async edit(quackId: number, newContent: string) {
+        try {
+            let quack = await prisma.quacks.update({
+                data: {
+                    content: newContent,
+                },
+                where: {
+                    id: quackId,
                 },
             })
 

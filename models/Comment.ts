@@ -12,7 +12,7 @@ const prisma = new PrismaClient()
 export class Comment {
     static async create(userId: number, quackId: number, content: string) {
         try {
-            console.log({userId, quackId})
+            console.log({ userId, quackId })
             let commentCreate = await prisma.comments.create({
                 data: {
                     content: content,
@@ -21,6 +21,10 @@ export class Comment {
                     comment_id: uuidv4(),
                 },
             })
+
+            console.log("---")
+            console.log(commentCreate)
+            console.log("---")
             let commentQuack = await prisma.quack_comments.create({
                 data: {
                     comment_id: commentCreate.id,
