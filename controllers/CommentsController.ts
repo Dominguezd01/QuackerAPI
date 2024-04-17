@@ -23,6 +23,7 @@ export class CommentsController {
 
         let user = await User.getUserById(userData.token.id)
         let quack = await Quack.getQuackByQuackId(userData.quackId)
+
         if (user === null)
             return res
                 .status(404)

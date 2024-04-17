@@ -12,6 +12,7 @@ const prisma = new PrismaClient()
 export class Comment {
     static async create(userId: number, quackId: number, content: string) {
         try {
+            console.log({userId, quackId})
             let commentCreate = await prisma.comments.create({
                 data: {
                     content: content,

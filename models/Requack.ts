@@ -17,6 +17,7 @@ export class Requack {
         quackId: number
     ): Promise<boolean | undefined> {
         try {
+            console.log({userId, quackId})
             let requack = await prisma.requacks.create({
                 data: {
                     user_id: userId,
@@ -25,6 +26,8 @@ export class Requack {
             })
             return true
         } catch (ex) {
+
+            
             console.error(ex)
             return undefined
         }
