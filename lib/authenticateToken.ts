@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from "express"
 import jwt from "jsonwebtoken"
 // Middleware to check for a valid JWT on protected routes
-const SECRET: string = process.env.TOKEN_SECRET || "SECRETITO"
+const SECRET: string = process.env.TOKEN_SECRET || "ESTO ES UN SECRETITO"
 
 const authenticateToken = (req: Request, res: Response, next: NextFunction) => {
     const token = req.header("authorization")

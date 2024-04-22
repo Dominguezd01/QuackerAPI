@@ -1,4 +1,4 @@
-import { Request, Response } from "express"
+import { json, Request, Response } from "express"
 import jwt from "jsonwebtoken"
 import { User } from "../models/User"
 import { users } from "@prisma/client"
@@ -141,7 +141,10 @@ export class UsersControllers {
             .json({ status: 400, msg: "Account already active" })
     }
 
-    static async getUserProfile(req: Request, res: Response) {
+    static async getUserProfile(
+        req: Request,
+        res: Response
+    ): Promise<Response> {
         let userData = req.params
 
         if (!userData || !userData.userName) {
@@ -162,5 +165,66 @@ export class UsersControllers {
                 .json({ status: 500, msg: "Something went wrong" })
 
         return res.status(200).json({ status: 200, userInfo: userInfo })
+    }
+
+    static async getUserEditProfile(
+        req: Request,
+        res: Response
+    ): Promise<Response> {
+        let user = await User.getEditProfile(await req.body.token.id)
+
+        if (user === null) {
+            return res.status(404).json({ status: 404, msg: "User not found" })
+        }
+
+        if (user === undefined) {
+            return res
+                .status(500)
+                .json({ status: 500, msg: "Internal server error" })
+        }
+
+        return res.status(200).json({ status: 200, userInfo: user })
+    }
+
+    static async editProfile(req: Request, res: Response) {
+        let userData = await req.body
+
+        if (
+            !userData ||
+            !userData.userName ||
+            !userData.displayName ||
+            !userData.bio ||
+            !userData.profileImage
+        ) {
+            return res
+                .status(400)
+                .json({ status: 400, msg: "Some data is missing" })
+        }
+
+        let userCheck = await User.getUserById(userData.token.id)
+
+        if (userCheck === undefined) return res.status(500)
+
+        if (userCheck === null) {
+            return res.status(401).json({ status: 401, msg: "Unauthorized" })
+        }
+
+        let user = await User.editUserProfile(
+            userCheck.id,
+            userData.displayName,
+            userData.userName,
+            userData.bio,
+            userData.profileImage
+        )
+        if (user === undefined) {
+            return res
+                .status(500)
+                .json({ status: 500, msg: "Internal server error" })
+        }
+        if (user.errors !== undefined) {
+            return res.status(400).json({ status: 400, errors: user.errors })
+        }
+
+        return res.status(200).json({ status: 200 })
     }
 }
