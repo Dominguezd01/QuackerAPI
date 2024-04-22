@@ -4,6 +4,15 @@ import { checkPass, encodePass } from "../lib/passwordFunctions"
 import { v4 as uuidv4 } from "uuid"
 import { EmailsController } from "../controllers/EmailsController"
 import { assign } from "nodemailer/lib/shared"
+import { ErrorObject } from "../lib/errorObject"
+import {
+    bioTooLong,
+    displayNameTooLong,
+    profileImageNotFound,
+    userNameAlreadyTaken,
+    userNameTooLong,
+} from "../lib/Constants"
+import { imagesList } from "../lib/imagesName"
 const prisma = new PrismaClient()
 export class User {
     /**
@@ -308,5 +317,106 @@ export class User {
             console.error(ex)
             return undefined
         }
+    }
+
+    static async getEditProfile(userId: number): Promise<any> {
+        try {
+            let user = await prisma.users.findUnique({
+                where: {
+                    id: userId,
+                },
+
+                select: {
+                    user_name: true,
+                    display_name: true,
+                    profile_picture: true,
+                    bio: true,
+                },
+            })
+            return user
+        } catch (ex) {
+            console.error(ex)
+            return undefined
+        }
+    }
+
+    static async editUserProfile(
+        userId: number,
+        displayName: string,
+        userName: string,
+        bio: string,
+        profileImage: string
+    ): Promise<boolean | any | undefined> {
+        try {
+            let errors = await this.validateUserInfo(
+                displayName,
+                userName,
+                bio,
+                profileImage,
+                userId
+            )
+
+            if (errors.length !== 0) {
+                return { errors: errors }
+            }
+
+            let user = await prisma.users.update({
+                data: {
+                    user_name: userName,
+                    display_name: displayName,
+                    bio: bio,
+                    profile_picture: profileImage,
+                },
+                where: {
+                    id: userId,
+                },
+            })
+            return true
+        } catch (ex) {
+            console.error(ex)
+            return undefined
+        }
+    }
+
+    private static async validateUserInfo(
+        displayName: string,
+        userName: string,
+        bio: string,
+        profileImage: string,
+        userId: number
+    ) {
+        let errorList: ErrorObject[] = []
+
+        let user = await prisma.users.findFirst({
+            where: {
+                user_name: userName,
+            },
+        })
+        //Check if a user that its not the current one has the same userName to prevent unique constraint
+        if (
+            user !== null &&
+            user.id !== userId &&
+            user.user_name === userName
+        ) {
+            errorList.push(new ErrorObject(userNameAlreadyTaken))
+        }
+
+        if (userName.length > 255) {
+            errorList.push(new ErrorObject(userNameTooLong))
+        }
+
+        if (displayName.length > 255) {
+            errorList.push(new ErrorObject(displayNameTooLong))
+        }
+
+        if (bio.length > 200) {
+            errorList.push(new ErrorObject(bioTooLong))
+        }
+
+        if (imagesList.find((i) => i === profileImage) == null) {
+            errorList.push(new ErrorObject(profileImageNotFound))
+        }
+
+        return errorList
     }
 }

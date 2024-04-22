@@ -49,6 +49,17 @@ app.get(
     UsersControllers.getUserProfile
 )
 
+app.get(
+    "/users/profileEdit/editInfo/getProfileEdit",
+    authenticateToken,
+    UsersControllers.getUserEditProfile
+)
+
+app.patch(
+    "/users/profileEdit/editInfo/edit/editProfile",
+    authenticateToken,
+    UsersControllers.editProfile
+)
 /**
  * Users follows realated routes
  */
