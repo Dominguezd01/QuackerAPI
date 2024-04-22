@@ -157,6 +157,5 @@ app.delete(
 app.post("/search", authenticateToken, SearchController.search)
 
 app.listen(PORT, () => {
-    getViewsDir()
     console.log(`http://localhost:${PORT}`)
 })

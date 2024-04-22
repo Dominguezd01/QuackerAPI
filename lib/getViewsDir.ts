@@ -1,7 +1,6 @@
 import { WINDOWS } from "./Constants"
 
 export function getViewsDir() {
-    console.log(process.platform)
     let routeSplited
     if (process.platform == WINDOWS) {
         routeSplited = __dirname.split("\\")
