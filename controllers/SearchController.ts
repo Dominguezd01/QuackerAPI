@@ -26,7 +26,6 @@ export class SearchController {
 
         if (searchTerm.startsWith("@")) {
             searchTerm = searchTerm.split("@")[1]
-            console.log("EMPIEZA POR @")
             let usersFound: any = await prisma.users.findMany({
                 select: {
                     id: true,
@@ -57,6 +56,7 @@ export class SearchController {
 
                     is_active: true,
                 },
+                distinct: ["id"],
             })
 
             for (let user of usersFound) {
@@ -102,12 +102,21 @@ export class SearchController {
                         },
                     },
                 },
+
                 where: {
                     is_active: true,
                     user_name: {
                         contains: searchTerm,
                     },
+                    OR: [
+                        {
+                            user_name: {
+                                contains: searchTerm,
+                            },
+                        },
+                    ],
                 },
+                distinct: ["id"],
             })
             for (let user of usersFound) {
                 user.followed =
@@ -118,45 +127,6 @@ export class SearchController {
                 delete user.user_follows_user_follows_user_id_followedTousers
             }
 
-            let usersFoundDisplayName: any[] = await prisma.users.findMany({
-                select: {
-                    id: true,
-                    user_name: true,
-                    display_name: true,
-                    profile_picture: true,
-                    bio: true,
-                    user_follows_user_follows_user_id_followedTousers: {
-                        select: {
-                            id: true,
-                        },
-                        where: {
-                            user_id: user.id,
-                        },
-                    },
-                    _count: {
-                        select: {
-                            user_follows_user_follows_user_id_followedTousers:
-                                true,
-                            user_follows_user_follows_user_idTousers: true,
-                        },
-                    },
-                },
-                where: {
-                    is_active: true,
-                    display_name: {
-                        contains: searchTerm,
-                    },
-                },
-            })
-            for (let user of usersFoundDisplayName) {
-                user.followed =
-                    user.user_follows_user_follows_user_id_followedTousers
-                        .length !== 0
-
-                user.isUser = user.id === userData.token.id
-                delete user.id
-                delete user.user_follows_user_follows_user_id_followedTousers
-            }
             let quacksFound: any[] = await prisma.quacks.findMany({
                 where: {
                     is_active: true,
@@ -164,7 +134,7 @@ export class SearchController {
                         contains: searchTerm,
                     },
                 },
-
+                distinct: ["id"],
                 select: {
                     id: true,
                     quack_id: true,
@@ -223,17 +193,17 @@ export class SearchController {
                     },
                 },
             })
-            console.log({ usersFound, quacksFound, usersFoundDisplayName })
+            //console.log({ usersFound, quacksFound, usersFoundDisplayName })
 
             if (
                 usersFound.length === 0 &&
-                quacksFound.length === 0 &&
-                usersFoundDisplayName.length === 0
+                quacksFound.length === 0
+                // usersFoundDisplayName.length === 0
             ) {
                 searchResult.noResults = true
             } else {
                 searchResult.users = usersFound
-                searchResult.users.push(...usersFoundDisplayName)
+                //searchResult.users.push(...usersFoundDisplayName)
                 searchResult.quacks = quacksFound
                 searchResult.noResults = false
             }
