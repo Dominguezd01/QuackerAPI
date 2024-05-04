@@ -32,44 +32,46 @@ app.use(
         origin: acceptedOrigins,
     })
 )
-const httpServer = app.listen(Number(PORT), () => {
-    console.log(`Listening in port ${PORT}`)
+const httpServer = app
+    .listen(() => {
+        console.log(`Listening in port ${PORT}`)
 
-    const io = new Server(httpServer, { cors: { origin: acceptedOrigins } })
+        const io = new Server(httpServer, { cors: { origin: acceptedOrigins } })
 
-    io.on("connection", (socket) => {
-        socket.removeAllListeners()
-        for (const room of rooms) {
-            socket.rooms.add(room)
-        }
+        io.on("connection", (socket) => {
+            socket.removeAllListeners()
+            for (const room of rooms) {
+                socket.rooms.add(room)
+            }
 
-        socket.on("join-room", (room) => {
-            console.log(room)
-            for (let room of socket.rooms) {
+            socket.on("join-room", (room) => {
+                console.log(room)
+                for (let room of socket.rooms) {
+                    socket.leave(room)
+                }
+
+                socket.join(room)
+                console.log(socket.rooms)
+            })
+
+            socket.on("leave-room", (room) => {
+                console.log(`${room} leave`)
                 socket.leave(room)
-            }
+            })
 
-            socket.join(room)
-            console.log(socket.rooms)
-        })
+            socket.on("message", (data, room) => {
+                if (room !== undefined) {
+                    console.log(data)
+                    io.to(room).emit("message", data)
+                }
+            })
 
-        socket.on("leave-room", (room) => {
-            console.log(`${room} leave`)
-            socket.leave(room)
-        })
-
-        socket.on("message", (data, room) => {
-            if (room !== undefined) {
-                console.log(data)
-                io.to(room).emit("message", data)
-            }
-        })
-
-        socket.on("disconnect", () => {
-            console.log("A user disconnected")
+            socket.on("disconnect", () => {
+                console.log("A user disconnected")
+            })
         })
     })
-})
+    .listen(PORT)
 
 //Routes to test the state
 app.get("/ping", (req, res) => {
