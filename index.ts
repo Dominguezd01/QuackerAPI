@@ -33,7 +33,7 @@ app.use(
     })
 )
 const httpServer = app
-    .listen(() => {
+    .listen(PORT, () => {
         console.log(`Listening in port ${PORT}`)
 
         const io = new Server(httpServer, { cors: { origin: acceptedOrigins } })
@@ -210,7 +210,3 @@ app.delete(
  * Search related routes
  */
 app.post("/search", authenticateToken, SearchController.search)
-
-app.listen(PORT, () => {
-    console.log(`http://localhost:${PORT}`)
-})
