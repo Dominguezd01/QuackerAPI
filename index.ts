@@ -208,8 +208,4 @@ const httpServer = app.listen(PORT, () => {
             console.log("A user disconnected")
         })
     })
-
-    io.listen(WSPORT)
-
-    console.log(`LGILI`)
 })
