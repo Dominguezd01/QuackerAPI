@@ -17,8 +17,8 @@ import { Server } from "socket.io"
 //Initialization variables
 const app = express()
 const prisma = new PrismaClient()
-const PORT = process.env.PORT || 3333
-const WSPORT = process.env.WSPORT || 3334
+const PORT: number = Number(process.env.PORT) || 3333
+const WSPORT: any = process.env.WSPORT || 3334
 const rooms = ["news", "sports", "games"]
 let acceptedOrigins = [
     "http://localhost:5173",
@@ -32,46 +32,44 @@ app.use(
         origin: acceptedOrigins,
     })
 )
-const httpServer = app
-    .listen(() => {
-        console.log(`Listening in port ${PORT}`)
+const httpServer = app.listen(Number(PORT), () => {
+    console.log(`Listening in port ${PORT}`)
 
-        const io = new Server(httpServer, { cors: { origin: acceptedOrigins } })
+    const io = new Server(httpServer, { cors: { origin: acceptedOrigins } })
 
-        io.on("connection", (socket) => {
-            socket.removeAllListeners()
-            for (const room of rooms) {
-                socket.rooms.add(room)
+    io.on("connection", (socket) => {
+        socket.removeAllListeners()
+        for (const room of rooms) {
+            socket.rooms.add(room)
+        }
+
+        socket.on("join-room", (room) => {
+            console.log(room)
+            for (let room of socket.rooms) {
+                socket.leave(room)
             }
 
-            socket.on("join-room", (room) => {
-                console.log(room)
-                for (let room of socket.rooms) {
-                    socket.leave(room)
-                }
+            socket.join(room)
+            console.log(socket.rooms)
+        })
 
-                socket.join(room)
-                console.log(socket.rooms)
-            })
+        socket.on("leave-room", (room) => {
+            console.log(`${room} leave`)
+            socket.leave(room)
+        })
 
-            socket.on("leave-room", (room) => {
-                console.log(`${room} leave`)
-                socket.leave(room)
-            })
+        socket.on("message", (data, room) => {
+            if (room !== undefined) {
+                console.log(data)
+                io.to(room).emit("message", data)
+            }
+        })
 
-            socket.on("message", (data, room) => {
-                if (room !== undefined) {
-                    console.log(data)
-                    io.to(room).emit("message", data)
-                }
-            })
-
-            socket.on("disconnect", () => {
-                console.log("A user disconnected")
-            })
+        socket.on("disconnect", () => {
+            console.log("A user disconnected")
         })
     })
-    .listen(WSPORT)
+})
 
 //Routes to test the state
 app.get("/ping", (req, res) => {
