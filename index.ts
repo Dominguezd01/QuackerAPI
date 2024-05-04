@@ -18,6 +18,7 @@ import { Server } from "socket.io"
 const app = express()
 const prisma = new PrismaClient()
 const PORT = process.env.PORT || 3333
+
 const rooms = ["news", "sports", "games"]
 let acceptedOrigins = [
     "http://localhost:5173",
@@ -70,7 +71,7 @@ const httpServer = app
             })
         })
     })
-    .listen(PORT)
+    .listen()
 
 //Routes to test the state
 app.get("/ping", (req, res) => {
