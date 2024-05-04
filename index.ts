@@ -18,7 +18,7 @@ import { Server } from "socket.io"
 const app = express()
 const prisma = new PrismaClient()
 const PORT = process.env.PORT || 3333
-
+const WSPORT = process.env.WSPORT || 3334
 const rooms = ["news", "sports", "games"]
 let acceptedOrigins = [
     "http://localhost:5173",
@@ -33,7 +33,7 @@ app.use(
     })
 )
 const httpServer = app
-    .listen(process.env.PORT, () => {
+    .listen(() => {
         console.log(`Listening in port ${PORT}`)
 
         const io = new Server(httpServer, { cors: { origin: acceptedOrigins } })
@@ -71,7 +71,7 @@ const httpServer = app
             })
         })
     })
-    .listen()
+    .listen(WSPORT)
 
 //Routes to test the state
 app.get("/ping", (req, res) => {
@@ -211,8 +211,6 @@ app.delete(
  */
 app.post("/search", authenticateToken, SearchController.search)
 
-/*
 app.listen(PORT, () => {
     console.log(`http://localhost:${PORT}`)
 })
-*/
