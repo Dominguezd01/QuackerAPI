@@ -13,17 +13,17 @@ import { PrismaClient } from "@prisma/client"
 import { CommentLikeController } from "./controllers/CommentLikeController"
 import { CommentRequackController } from "./controllers/CommentRequackController"
 import { getViewsDir } from "./lib/getViewsDir"
-
+import { Server } from "socket.io"
 //Initialization variables
 const app = express()
 const prisma = new PrismaClient()
 const PORT = process.env.PORT || 3333
+const rooms = ["news", "sports", "games"]
 let acceptedOrigins = [
     "http://localhost:5173",
     "http://localhost:4173",
     "https://quackersocial.netlify.app",
 ]
-
 //Setting middlewares
 app.use(express.json())
 app.use(
@@ -31,12 +31,55 @@ app.use(
         origin: acceptedOrigins,
     })
 )
+const httpServer = app
+    .listen(process.env.PORT, () => {
+        console.log(`Listening in port ${PORT}`)
+
+        const io = new Server(httpServer, { cors: { origin: acceptedOrigins } })
+
+        io.on("connection", (socket) => {
+            socket.removeAllListeners()
+            for (const room of rooms) {
+                socket.rooms.add(room)
+            }
+
+            socket.on("join-room", (room) => {
+                console.log(room)
+                for (let room of socket.rooms) {
+                    socket.leave(room)
+                }
+
+                socket.join(room)
+                console.log(socket.rooms)
+            })
+
+            socket.on("leave-room", (room) => {
+                console.log(`${room} leave`)
+                socket.leave(room)
+            })
+
+            socket.on("message", (data, room) => {
+                if (room !== undefined) {
+                    console.log(data)
+                    io.to(room).emit("message", data)
+                }
+            })
+
+            socket.on("disconnect", () => {
+                console.log("A user disconnected")
+            })
+        })
+    })
+    .listen(PORT)
 
 //Routes to test the state
 app.get("/ping", (req, res) => {
     res.send("pong")
 })
 
+app.get("/rooms", authenticateToken, (req, res) => {
+    res.status(200).json({ status: 200, rooms: rooms })
+})
 /**
  * Users related routes
  */
@@ -167,6 +210,8 @@ app.delete(
  */
 app.post("/search", authenticateToken, SearchController.search)
 
+/*
 app.listen(PORT, () => {
     console.log(`http://localhost:${PORT}`)
 })
+*/
