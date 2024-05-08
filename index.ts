@@ -8,11 +8,9 @@ import { UserQuackLikeController } from "./controllers/UserQuackLikeController"
 import { RequackController } from "./controllers/RequacksController"
 import { CommentsController } from "./controllers/CommentsController"
 import { SearchController } from "./controllers/SearchController"
-import { Quack } from "./models/Quack"
 import { PrismaClient } from "@prisma/client"
 import { CommentLikeController } from "./controllers/CommentLikeController"
 import { CommentRequackController } from "./controllers/CommentRequackController"
-import { getViewsDir } from "./lib/getViewsDir"
 import { Server } from "socket.io"
 //Initialization variables
 const app = express()

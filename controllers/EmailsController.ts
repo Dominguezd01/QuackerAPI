@@ -27,10 +27,21 @@ export class EmailsController {
             from: process.env.GMAIL_ACC,
             to: user.email,
             subject: "Verify email",
+
             html: `
+                <style>
+                    .btn{
+                        background-color: #22c55e;
+                        border-radius: 10px;
+                        padding: 8px;
+                        color: white;
+                        text-decoration: none;
+                        margin-top: 10px;
+                    }
+                </style>
                 Welcome to Ducker, before you can do anything, we need to verify this email exists.<br>
                 Click on the link bellow to verify your account.<br>
-                <a href="${process.env.PROTO}://${host}/users/auth/verifyRegister/${user.user_name}">VERIFY!!!</a>
+                <a class="btn" href="${process.env.PROTO}://${host}/users/auth/verifyRegister/${user.user_name}">VERIFY!!!</a>
             `,
         }
 
