@@ -41,7 +41,7 @@ export class EmailsController {
                 </style>
                 Welcome to Ducker, before you can do anything, we need to verify this email exists.<br>
                 Click on the link bellow to verify your account.<br>
-                <a class="btn" href="${process.env.PROTO}://${host}/users/auth/verifyRegister/${user.user_name}">VERIFY!!!</a>
+                <a class="btn" href="${host}/users/auth/verifyRegister/${user.user_name}">VERIFY!!!</a>
             `,
         }
 
