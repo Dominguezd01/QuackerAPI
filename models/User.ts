@@ -374,7 +374,7 @@ export class User {
                     id: userId,
                 },
             })
-            return true
+            return user
         } catch (ex) {
             console.error(ex)
             return undefined

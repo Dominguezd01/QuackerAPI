@@ -124,7 +124,9 @@ export class CommentsController {
         }
 
         let comments = await Comment.getCommentsFromQuack(quack.id, user.id)
-
+        if (comments == null) {
+            comments = []
+        }
         return res.status(200).json({ status: 200, comments: comments })
     }
 }
