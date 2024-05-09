@@ -41,7 +41,7 @@ export class UsersControllers {
         if (createUser) {
             return res.status(200).json({
                 status: 200,
-                msg: "Welcome to Ducker, happy quacking!!",
+                msg: "Check your email to verify your account!!!",
             })
         } else if (createUser == null) {
             return res.status(401).json({

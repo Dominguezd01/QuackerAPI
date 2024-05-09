@@ -36,20 +36,23 @@ export class User {
         try {
             let user = await prisma.users.findFirst({
                 where: {
-                    OR: [
-                        {
-                            user_name: {
-                                equals: user_name_user,
-                            },
-                            email: {
-                                equals: emailUser,
-                            },
-                        },
-                    ],
+                    user_name: {
+                        equals: user_name_user,
+                    },
                 },
             })
-            if (user != null) return null
-            user = await prisma.users.create({
+
+            let userEmail = await prisma.users.findFirst({
+                where: {
+                    email: {
+                        equals: emailUser,
+                    },
+                },
+            })
+            console.log(user)
+            if (user != null || userEmail != null) return null
+
+            let userCreate = await prisma.users.create({
                 data: {
                     display_name: display_name,
                     email: emailUser,
@@ -62,7 +65,7 @@ export class User {
                 },
             })
 
-            EmailsController.sendEmailRegister(user, host)
+            await EmailsController.sendEmailRegister(userCreate, host)
             return true
         } catch (ex) {
             console.error(ex)

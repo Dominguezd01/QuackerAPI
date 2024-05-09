@@ -29,16 +29,6 @@ export class EmailsController {
             subject: "Verify email",
 
             html: `
-                <style>
-                    .btn{
-                        background-color: #22c55e;
-                        border-radius: 10px;
-                        padding: 8px;
-                        color: white;
-                        text-decoration: none;
-                        margin-top: 10px;
-                    }
-                </style>
                 Welcome to Ducker, before you can do anything, we need to verify this email exists.<br>
                 Click on the link bellow to verify your account.<br>
                 <a class="btn" href="${host}/users/auth/verifyRegister/${user.user_name}">VERIFY!!!</a>
@@ -49,6 +39,8 @@ export class EmailsController {
             if (error) {
                 console.error("Error sending email:", error)
             }
+
+            console.log(info)
         })
     }
 }

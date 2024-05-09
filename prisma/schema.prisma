@@ -79,6 +79,8 @@ model requacks {
   post_id Int
   quacks  quacks @relation(fields: [post_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "requacks_post_id_foreign")
   users   users  @relation(fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "requacks_user_id_foreign")
+
+  @@unique([post_id, user_id], map: "requacks_unique")
 }
 
 model user_comments {

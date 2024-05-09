@@ -31,6 +31,19 @@ export class RequackController {
             return res.status(404).json({ status: 404, msg: "Quack not found" })
         }
 
+        let requackFound = await Requack.getRequackId(user.id, quack.id)
+
+        if (requackFound === undefined) {
+            return res.status(500).json({
+                status: 500,
+                msg: "Something went wrong, try again later",
+            })
+        }
+
+        if (requackFound !== null) {
+            return res.status(200).json({ status: 200, msg: "Requacked" })
+        }
+
         let requack = await Requack.create(user?.id, quack.id)
 
         if (requack === undefined)
