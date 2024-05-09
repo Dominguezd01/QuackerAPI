@@ -216,6 +216,7 @@ export class UsersControllers {
             userData.bio,
             userData.profileImage
         )
+
         if (user === undefined) {
             return res
                 .status(500)
@@ -224,7 +225,18 @@ export class UsersControllers {
         if (user.errors !== undefined) {
             return res.status(400).json({ status: 400, errors: user.errors })
         }
+        if (userCheck.user_name !== userData.userName) {
+            generateToken(user)
+        }
 
-        return res.status(200).json({ status: 200 })
+        return res.status(200).json({
+            status: 200,
+            cookies: {
+                userName: user.user_name,
+                displayName: user.display_name,
+                token: generateToken(user),
+                profilePic: user.profile_picture,
+            },
+        })
     }
 }
