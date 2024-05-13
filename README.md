@@ -30,6 +30,8 @@ GMAIL_ACC= example@gmail.com
 GMAIL_TOKEN="your third party app token"
 TOKEN_SECRET="Secret to create JWT"
 LOGIN_QUACKER="http://localhost:5173/users/auth/login"
+PORT=3333 #or whatever you want
+WSPORT=3334 #Port for webshockets
 ```
 Now you have to run the migration needed to create the tables in the database:
 ```
