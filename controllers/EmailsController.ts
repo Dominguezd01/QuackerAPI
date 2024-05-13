@@ -3,6 +3,7 @@ import nodemailer from "nodemailer"
 /**
  * Options to send the email in this case, by Gmail but you can customize to use the provider you want
  */
+
 const transporter = nodemailer.createTransport({
     service: "gmail",
     host: "smtp.gmail.com",
@@ -13,6 +14,7 @@ const transporter = nodemailer.createTransport({
         pass: process.env.GMAIL_TOKEN,
     },
 })
+
 /**
  * Handles the email stuff
  */
@@ -29,7 +31,7 @@ export class EmailsController {
             subject: "Verify email",
 
             html: `
-                Welcome to Ducker, before you can do anything, we need to verify this email exists.<br>
+                Welcome to Quacker, before you can do anything, we need to verify this email exists.<br>
                 Click on the link bellow to verify your account.<br>
                 <a class="btn" href="${host}/users/auth/verifyRegister/${user.user_name}">VERIFY!!!</a>
             `,
