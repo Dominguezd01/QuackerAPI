@@ -52,6 +52,7 @@ bun run dev
 ## Building
 
 Run the following command to compile to JavaScript all the project, create the prisma client and start the API:
+**THIS WILL ONLY WORK IN LINUX FOR COMPATIBILITY PURPOSE**
 ```bash
 bun run build
 ```
