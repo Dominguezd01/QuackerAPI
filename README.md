@@ -23,6 +23,7 @@ bun install
 ```
 
 # **Dont forget to add your .env configurations, otherwise the project will fail at start**
+Just create a .env file in the root of the project and modify the values shown to match your needs
 ```
 DATABASE_URL=postgresql://USER:PASSWORD@HOST:PORT/DATABASE
 GMAIL_ACC= example@gmail.com
