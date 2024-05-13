@@ -37,7 +37,7 @@ bunx prisma migrate dev
 ```
 This will create the tables in your database and also the prisma_migrations table 
 
-# Run the project
+# Run the project in development
 To run the project you can either use two of this commands:
 
 If you dont want the server to restart with every change run this command:
